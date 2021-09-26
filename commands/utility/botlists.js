@@ -1,6 +1,5 @@
-const messageCreate = require("../../events/messageCreate")
 const utils = require('../../utils')
-const d = utils.emojis.dot; const b = utils.emojis.blank
+const d = utils.emojis.d; const b = utils.emojis.b
 const {MessageButton, MessageActionRow, MessageSelectMenu, MessageEmbed} = require('discord.js')
 
 module.exports = {
@@ -34,9 +33,9 @@ module.exports = {
                         .setPlaceholder('Get the page for a bot in this sevrer...')
                         .addOptions(dropDown),
                 );
-            message.channel.send({embeds: [embed], ephemeral: true, components: [row]})
+            message.reply({embeds: [embed], ephemeral: true, components: [row]})
         } else {
-            message.channel.send({embeds: [new MessageEmbed().setAuthor(`${user.username} [ #${user.discriminator} ]`).setDescription(`Click the buttons below to view the page\non ${user.username} for many botlists.`).addField('Please Note', 'If this bot doesn\'t have a page. nothing will show up.').setThumbnail(user.avatarURL()).setColor(0xbf943d)], components: [
+            message.reply({embeds: [new MessageEmbed().setAuthor(`${user.username} [ #${user.discriminator} ]`).setDescription(`Click the buttons below to view the page\non ${user.username} for many botlists.`).addField('Please Note', 'If this bot doesn\'t have a page. nothing will show up.').setThumbnail(user.avatarURL()).setColor(0xbf943d)], components: [
                 new MessageActionRow().addComponents(
                 new MessageButton().setLabel('Top.gg').setURL(`https://top.gg/bot/${user.id}`).setStyle('LINK'), 
                 new MessageButton().setLabel('Discord Bot List').setURL(`https://discordbotlist.com/bots/${user.id}`).setStyle('LINK'),

@@ -1,6 +1,5 @@
-const messageCreate = require("../../events/messageCreate")
 const utils = require('../../utils')
-const d = utils.emojis.dot; const b = utils.emojis.blank
+const d = utils.emojis.d; const b = utils.emojis.b
 const {MessageButton, MessageActionRow, MessageSelectMenu, MessageEmbed} = require('discord.js')
 
 module.exports = {
@@ -34,9 +33,9 @@ module.exports = {
                         .setPlaceholder('Invite a bot from this server...')
                         .addOptions(dropDown),
                 );
-            message.channel.send({embeds: [embed], ephemeral: true, components: [row]})
+            message.reply({embeds: [embed], ephemeral: true, components: [row]})
         } else {
-            message.channel.send({embeds: [new MessageEmbed().setAuthor(`${user.username} [ #${user.discriminator} ]`).setDescription(`Click the buttons below to invite\n${user.username} to your server.`).addField('Please Note', 'If you give a bot you dont trust too many\npermissions, their stay there may go badly.').setThumbnail(user.avatarURL()).setColor(0xbf943d)], components: [
+            message.reply({embeds: [new MessageEmbed().setAuthor(`${user.username} [ #${user.discriminator} ]`).setDescription(`Click the buttons below to invite\n${user.username} to your server.`).addField('Please Note', 'If you give a bot you dont trust too many\npermissions, their stay there may go badly.').setThumbnail(user.avatarURL()).setColor(0xbf943d)], components: [
                 new MessageActionRow().addComponents(
                 new MessageButton().setLabel('No Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=2048&scope=bot`).setStyle('LINK'), 
                 new MessageButton().setLabel('Member Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=378944&scope=bot`).setStyle('LINK')
