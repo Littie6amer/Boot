@@ -14,8 +14,8 @@ module.exports = {
             const embed = await utils.embeds.helpEmbed(this, message, [" Gender Roles @Female @Male @GenderQueer @Non-binary"])
             return message.reply({embeds: [embed]})
         }
-        if (!message.member.permissions.has('ADD_ROLES')) return message.reply({content: `You dont have perms to add roles!`});
-        if (!message.guild.me.permissions.has('ADD_ROLES')) return message.reply({content: `I am unable to add roles, check my permissions!`});
+        if (!message.member.permissions.has('MANAGE_ROLES')) return message.reply({content: `You dont have perms to add roles!`});
+        if (!message.guild.me.permissions.has('MANAGE_ROLES')) return message.reply({content: `I am unable to add roles, check my permissions!`});
         
         const getColors = require('get-image-colors')
         const colors = await getColors(message.guild.iconURL({ format: "png" }))

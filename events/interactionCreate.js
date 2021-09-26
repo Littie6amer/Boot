@@ -51,7 +51,7 @@ module.exports = async (client, interaction) => {
     if (interaction.customId == 'roleList') {
         interaction.message.edit({components: interaction.message.components})
         let role = interaction.message.guild.roles.cache.get(interaction.values[0])
-        if (!interaction.message.guild.me.permissions.has('ADD_ROLES')) return interaction.reply({ephemeral: true, content: `I am unable to add role **${role.name}**, check my permissions!`});
+        if (!interaction.message.guild.me.permissions.has('MANAGE_ROLES')) return interaction.reply({ephemeral: true, content: `I am unable to add role **${role.name}**, check my permissions!`});
         if (interaction.message.guild.me.roles.highest.position <= role.position) return interaction.reply({ephemeral: true, content: `I am unable to add role **${role.name}**, check the position of my highest role!`});
         if (role) {
             if (interaction.member.roles.cache.get(role.id)) {
