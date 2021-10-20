@@ -64,4 +64,21 @@ module.exports = async (client, interaction) => {
         }
     }
 
+    if (interaction.isButton()) {
+        if (interaction.customId.startsWith('br:') && interaction.customId.slice(3)) {
+            let role = interaction.message.guild.roles.cache.get(interaction.customId.slice(3))
+            if (!interaction.message.guild.me.permissions.has('MANAGE_ROLES')) return interaction.reply({ephemeral: true, content: `I am unable to add role **${role.name}**, check my permissions!`});
+            if (interaction.message.guild.me.roles.highest.position <= role.position) return interaction.reply({ephemeral: true, content: `I am unable to add role **${role.name}**, check the position of my highest role!`});
+            if (role) {
+                if (interaction.member.roles.cache.get(role.id)) {
+                    interaction.member.roles.remove(role.id)
+                    interaction.reply({ephemeral: true, content: `**${role.name}** role was taken from you.`})
+                } else {
+                    interaction.member.roles.add(role.id)
+                    interaction.reply({ephemeral: true, content: `You were given **${role.name}** role`})
+                }
+            }
+        }
+    }
+
 }

@@ -1,10 +1,23 @@
 const { Client, Collection, Structures } = require('discord.js')
+require('dotenv').config()
+
 const client = new Client({
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"]
 })
 
 const fs = require('fs')
 const config = require('./data/config.json')
+
+// Database Stuff
+
+const mongoose = require('mongoose', {
+    keepAlive: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+})
+const url  = process.env.dbToken
+mongoose.connect(url).then(() => console.log('[Mongoose]: Connected!'))
 
 // Create Listeners
 fs.readdirSync('./events').forEach(e => {
@@ -32,5 +45,4 @@ function loadFolder (path) {
 
 // Login to the bot
 
-require('dotenv').config()
 client.login(process.env.token)
