@@ -8,7 +8,8 @@ const guildProfileSc = new mongoose.Schema({
       level: Number,
       messages: Number,
       lastXpTimestamp: Number
-  }
+  },
+  activity: JSON
 })
 
 module.exports = mongoose.model('guildProfiles', guildProfileSc)

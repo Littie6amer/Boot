@@ -4,7 +4,7 @@
   "description": "A discord bot that is very useful lol",
   "main": "index.js",
   "dependencies": {
-    "canvas": "^2.8.0",
+    "canvas": "^2.6.1",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "get-contrast-ratio": "^0.2.1",
