@@ -122,7 +122,7 @@ module.exports = async (client, message) => {
 
             // Find command
             let commandName = content.split(' ')[0].toLowerCase();
-            command = client.commands.find(c => c.name == commandName || c.aka.includes(commandName))
+            command = client.commands.find(c => c.name == commandName || c.aka&&c.aka.includes(commandName))
 
         }
 
