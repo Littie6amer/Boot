@@ -8,7 +8,6 @@ const { MessageEmbed, MessageAttachment } = require('discord.js');
 
 module.exports = {
     name: "activity",
-    aka: ['level', 'l'],
     config: {
         "useSolidColorBackground": false,
         "showGuildName": false,
@@ -52,7 +51,7 @@ module.exports = {
         })
 
         const embed = new MessageEmbed()
-        .setAuthor(user.name, user.avatarURL())
+        .setAuthor(user.username, user.avatarURL())
         .setDescription(`${channels.join('\n')}`)
         .addField('Overall', `**${mentionedGuildProfile.activity.overall.messages}** messages, **${mentionedGuildProfile.activity.overall.replies}** replies, **${mentionedGuildProfile.activity.overall.spam}** spam`)
         .setColor(findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : 0xbf943d)
