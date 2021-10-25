@@ -16,8 +16,8 @@ leveling.resources = {
     ]
 }
 
-function getRandomXp () {
-    return Math.floor((Math.random()*5)+2)
+function getRandomXp() {
+    return Math.floor((Math.random() * 5) + 2)
 }
 
 leveling.getRandomXp = getRandomXp
@@ -45,5 +45,40 @@ async function applyBackground(canvas, context, provided) {
 }
 
 leveling.applyBackground = applyBackground
+
+// taken from https://stackoverflow.com/questions/19585999/canvas-drawimage-with-round-corners
+function roundedRect(context, x, y, width, height, radius) {
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.lineTo(x + width - radius, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + radius);
+    context.lineTo(x + width, y + height - radius);
+    context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    context.lineTo(x + radius, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - radius);
+    context.lineTo(x, y + radius);
+    context.quadraticCurveTo(x, y, x + radius, y);
+    context.closePath();
+    context.fill()
+}
+
+leveling.roundedRect = roundedRect
+
+function roundedClip(context, x, y, width, height, radius) {
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.lineTo(x + width - radius, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + radius);
+    context.lineTo(x + width, y + height - radius);
+    context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    context.lineTo(x + radius, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - radius);
+    context.lineTo(x, y + radius);
+    context.quadraticCurveTo(x, y, x + radius, y);
+    context.closePath();
+    context.clip()
+}
+
+leveling.roundedClip = roundedClip
 
 module.exports = leveling

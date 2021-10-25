@@ -18,9 +18,8 @@ module.exports = {
     async run(toolbox) {
         const { message, args, client } = toolbox
         const { rbgToHex, findBrightestColor } = toolbox.utils
-        const { resources, parseXp, applyBackground } = toolbox.utils.leveling
+        const { resources, parseXp, applyBackground, roundedRect, roundedClip } = toolbox.utils.leveling
 
-        
         let user;
         
         if (args[0]) {
@@ -40,7 +39,7 @@ module.exports = {
             userId: user.id
         })
         
-        let { level, xp, xpAmounts } = parseXp(mentionedGuildProfile.leveling.xp)
+        let { level, xp, xpAmounts } = parseXp(mentionedGuildProfile?.leveling.xp||0)
 
         const colors = await getColors(user.displayAvatarURL({ format: 'png' }))
 
@@ -64,24 +63,24 @@ module.exports = {
 
         // profile card background
         context.fillStyle = "#000000cc"
-        context.fillRect(10, this.config.showGuildName  ? 50 : 10, 540, 140)
+        roundedRect(context, 10, this.config.showGuildName  ? 50 : 10, 540, 140, 15)
 
         // username text
         context.fillStyle = "#fff"
-        context.font = '25px Open Sans Bold'
+        context.font = '20px Open Sans Bold'
         context.fillText(user.username, this.config.showUserAvatar ? 80 : 20, this.config.showGuildName  ? 90 : 55)
 
         // progress bar outline
         context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
-        context.fillRect(20, this.config.showGuildName  ? 120 : 85, 520, 18)
+        roundedRect(context, 20, this.config.showGuildName  ? 120 : 85, 520, 18, 9)
 
         // progress background color
         context.fillStyle = "#000000"
-        context.fillRect(21, this.config.showGuildName  ? 121 : 86, 518, 16)
+        roundedRect(context, 21, this.config.showGuildName  ? 121 : 86, 518, 16, 9)
 
         // progress bar 
         context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
-        context.fillRect(21, this.config.showGuildName  ? 121 : 86, (xp / xpAmounts[0]) * 518, 16)
+        if (xp) roundedRect(context, 21, this.config.showGuildName  ? 121 : 86, (xp / xpAmounts[0]) * 518, 16, 9)
 
         // level text
         context.fillStyle = "#fff"
@@ -96,6 +95,7 @@ module.exports = {
 
         // avatar drawing
         const avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'jpg' }));
+        roundedClip(context, 20, this.config.showGuildName  ? 60 : 25, 45, 45, 15);
         if (this.config.showUserAvatar) context.drawImage(avatar, 20, this.config.showGuildName  ? 60 : 25, 45, 45);
 
         const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
