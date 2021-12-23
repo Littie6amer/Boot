@@ -1,17 +1,19 @@
-const guildProfileSc = require('../schemas/guildProfile')
 const guildDataSc = require('../schemas/guildData');
-const { DiscordAPIError, MessageEmbed } = require('discord.js');
+const guildProfileSc = require('../schemas/guildProfile')
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const utils = require('../utils')
+const { parseXp, getRandomXp } = utils.leveling
+const ms = require('ms');
 
 module.exports = async (client, message) => {
     const { prefixes } = require('../data/config.json')
-    const { parseXp, getRandomXp } = utils.leveling
     prefixes.push([`<@${client.user.id}>`, `<@!${client.user.id}>`])
 
     message.channel.myPermissions = message.guild.me.permissionsIn(message.channel.id)
 
+    let first = false
     // Return if bot or no message content
-    if (message.author.bot || !message.content || message.webhookId) return
+    if (!message.content || message.webhookId) return
 
     let guildData = await guildDataSc.findOne({
         guildId: message.guild.id,
@@ -23,87 +25,107 @@ module.exports = async (client, message) => {
     })
 
     if (!guildData) {
-        guildData = {
-            guildId: message.guild.id,
-            settings: {
-                leveling: {
-                    levelupMessages: true
-                }
-            }
-        }
-        await guildProfileSc.create(userGuildProfile)
+        guildData = await guildDataSc.create({
+            guildId: message.guild.id
+        })
     }
 
-    // Add comments here
     if (!userGuildProfile) {
-
-        userGuildProfile = {
+        userGuildProfile = await guildProfileSc.create({
             guildId: message.guild.id,
             userId: message.author.id,
+        })
+        first = true
+    }
+    
+    if (guildData.activity.enabled) {
+
+        if (!userGuildProfile.activity.channels.find(c => c.id == message.channel.id)) userGuildProfile.activity.channels.push({ id: message.channel.id, messages: 0, replies: 0, spam: 0 })
+
+        if (!userGuildProfile.activity.spamTimestamp || Date.now() - userGuildProfile.activity.spamTimestamp >= 10000) {
+            userGuildProfile.activity.spamBuildup = 1
+            userGuildProfile.activity.spamTimestamp = Date.now()
+        } else if (userGuildProfile.activity.spamBuildup > 4) {
+            userGuildProfile.activity.overall.spam++
+            userGuildProfile.activity.channels.find(c => c.id == message.channel.id).spam++
+            message.spam = true
+            if (message.channel.myPermissions.has('MANAGE_MESSAGES') && message.deletable) message.delete()
+            userGuildProfile.activity.spamBuildup++
+        } else {
+            userGuildProfile.activity.spamBuildup = userGuildProfile.activity.spamBuildup + 1 || 1
         }
 
-        await guildProfileSc.create(userGuildProfile)
+        if (message.reference) {
+            userGuildProfile.activity.overall.replies++
+            userGuildProfile.activity.channels.find(c => c.id == message.channel.id).replies++
+        }
+
+        userGuildProfile.activity.overall.messages++
+        userGuildProfile.activity.channels.find(c => c.id == message.channel.id).messages++
 
     }
 
-    let leveling = userGuildProfile.leveling || {}
-    leveling = leveling || {}
-    leveling.xp = leveling.xp || 0
+    if (guildData.leveling.enabled && !message.spam) {
 
-    let activity = userGuildProfile.activity || {}
-    activity.overall = activity.overall || { messages: 0, replies: 0, spam: 0 }
-    activity[message.channel.id] = activity[message.channel.id] || { messages: 0, replies: 0, spam: 0 }
+        if (!userGuildProfile.leveling.lastXpTimestamp || Date.now() - userGuildProfile.leveling.lastXpTimestamp >= guildData.leveling.xp.timeout) {
 
-    if (!leveling.lastXpTimestamp || Date.now() - leveling.lastXpTimestamp >= 30000) {
+            userGuildProfile.leveling.lastXpTimestamp = Date.now()
+            let xpGain = getRandomXp(guildData.leveling.xp.rate)
+            let { beforeGainLevel, afterGainLevel } = {
+                beforeGainLevel: parseXp(userGuildProfile.leveling.xp),
+                afterGainLevel: parseXp(userGuildProfile.leveling.xp + xpGain)
+            }
 
-        let xpGain = getRandomXp()
-        let { beforeGainLevel, afterGainLevel } = {
+            if (beforeGainLevel.level < afterGainLevel.level && message.channel.myPermissions.has('SEND_MESSAGES') && guildData.leveling.message.enabled && !message.author.bot) {
+                let channel = message.guild.channels.cache.get(guildData.leveling.message.channel)
+                if (channel && !message.guild.me.permissionsIn(channel?.id).has("SEND_MESSAGES")) delete channel
 
-            beforeGainLevel: parseXp(leveling.xp),
-            afterGainLevel: parseXp(leveling.xp + xpGain)
+                const LevelUpMessage = await utils.leveling.levelUpMessageVars(guildData.leveling.message.content, userGuildProfile, message, xpGain)
+
+                const embed = new MessageEmbed()
+                    .setDescription(LevelUpMessage)
+                    .setFooter("View your level and xp progress with !!level")
+                    .setColor(0xbf943d)
+
+                const data = {}
+                if (guildData.leveling.message.embed) {
+                    data.embeds = [embed]
+                } else {
+                    data.content = LevelUpMessage
+                }
+                if (guildData.leveling.message.channel == "ANY") {
+                    if (!message.deleted) message.reply(data)
+                } else if (channel) {
+                    data.content = (data.content ? '<@' + message.member.id + '>,\n' + data.content : '<@' + message.member.id + '>')
+                    channel.send(data)
+                }
+            }
+
+            userGuildProfile.leveling.xp += xpGain
 
         }
 
-        if (beforeGainLevel.level < afterGainLevel.level && message.channel.myPermissions.has('SEND_MESSAGES') && guildData.settings.leveling.levelupMessages) {
+    }
 
-            const embed = new MessageEmbed()
-                .setDescription(`**Level up!**<:Blank4:801947320064933909>\`Level ${beforeGainLevel.level} -> Level ${afterGainLevel.level}\``)
-                .setFooter(`Gained the required ${beforeGainLevel.xpAmounts[0]} xp for level ${afterGainLevel.level}`)
-                .setColor(0xbf943d)
-            message.reply({ embeds: [embed] })
-
-        }
-
-        leveling.xp += xpGain
-        leveling.lastXpTimestamp = Date.now()
-
+    if (first) {
+        guildProfileSc.updateOne({
+            guildId: message.guild.id,
+            userId: message.author.id,
+        }, userGuildProfile)
     } else {
-
-        activity.overall.spam++
-        activity[message.channel.id].spam++
-
+        //userGuildProfile.markModified('leveling', 'leveling.lastXpTimestamp', 'leveling.xp', 'activity', 'activity.spamBuildup', 'activity.spamTimestamp', 'activity.overall', 'activity.overall.messages')
+        userGuildProfile.markModified('activity.channels');
+        await userGuildProfile.save().catch(e => {
+            console.log(`[Boot Manager Error]: Code error with saving leveling data`)
+            console.log(`~~~`)
+            console.error(e);
+        })
     }
 
-    if (message.reference) {
-
-        activity.overall.replies++
-        activity[message.channel.id].replies++
-
-    }
-
-    activity.overall.messages++
-    activity[message.channel.id].messages++
-
-    userGuildProfile.leveling = leveling
-    userGuildProfile.activity = activity
-
-    await guildProfileSc.updateOne({
-        guildId: message.guild.id,
-        userId: message.author.id,
-    }, userGuildProfile)
+    if (message.spam || message.deleted) return
 
     // Check channel permissions
-    if (!message.channel.myPermissions.has('SEND_MESSAGES')) return
+    if (!message.channel.myPermissions.has('SEND_MESSAGES') || !message.channel.myPermissions.has('READ_MESSAGE_HISTORY') || message.author.bot) return
 
     let args, command;
 
@@ -111,27 +133,53 @@ module.exports = async (client, message) => {
     for (prefix in prefixes) {
 
         prefix = prefixes[prefix]
-        if (message.content.startsWith(prefix)) {
+        if (message.content.toLowerCase().startsWith(prefix.toString().toLowerCase())) {
 
             // Remove the prefix from content
-            let content = message.content.slice(prefix.length);
+            let content = message.content.slice(prefix.length)[0]?.startsWith(' ') ? message.content.slice(prefix.length + 1) : message.content.slice(prefix.length);
             if (!content) return
 
             // Define Arguments
-            args = content.split(' ')[1] ? content.split(' ').slice(1) : []
+            args = content.split(' ') ? content.split(' ').filter(a => a) : []
 
             // Find command
-            let commandName = content.split(' ')[0].toLowerCase();
-            command = client.commands.find(c => c.name == commandName || c.aka&&c.aka.includes(commandName))
-
+            let commandName = args.shift().toLowerCase();
+            command = client.commands.find(c => c.names.includes(commandName))
         }
 
     }
 
     // Run the command
     if (command) {
-        if (!message.channel.myPermissions.has('EMBED_LINKS')) return message.channel.send('**I\'m missing Embed Links permission!**')
-        const toolbox = { message, args, client, userGuildProfile, utils }
-        command.run(toolbox)
+        // Check if the command restriction allows the author to run the command
+        if (typeof client.restrictions[command.restriction] == "object" && !client.restrictions[command.restriction].includes(message.author.id)) return
+
+        // Check if there is a cooldown
+        const cooldown = client.cooldowns[message.author.id] ? client.cooldowns[message.author.id][command.names[0]] : null
+
+        if (cooldown && Date.now() - cooldown < command.cooldown) {
+            return message.reply({ content: `You can use this command again in ${ms(command.cooldown - (Date.now() - cooldown), { long: true })}` })
+        }
+
+        // Run the command
+        const toolbox = { message, args, client, userGuildProfile, guildData }
+        command.execute(toolbox)?.catch(e => {
+            message.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/adYXN5pa8X").setStyle("LINK"))] })
+            console.log(`[Boot Manager Error]: Code error with the ${command.names[0]} command`)
+            console.log(`~~~`)
+            console.error(e)
+        })
+
+        // Add a cooldown
+        if (command.cooldown && !userGuildProfile?.bypass) {
+            const time = Date.now()
+            client.cooldowns[message.author.id] = client.cooldowns[message.author.id] || {}
+            client.cooldowns[message.author.id][command.names[0]] = time
+
+            // Delete the cooldown after it ends
+            setTimeout(() => {
+                if (client.cooldowns[message.author.id] && client.cooldowns[message.author.id][command.names[0]] == time) delete client.cooldowns[message.author.id][command.names[0]]
+            }, command.cooldown)
+        }
     }
 }

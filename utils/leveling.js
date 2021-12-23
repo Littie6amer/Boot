@@ -1,4 +1,6 @@
 const Canvas = require('canvas');
+const ms = require("ms")
+const { DiscordAPIError, MessageEmbed } = require('discord.js');
 
 const leveling = []
 
@@ -16,14 +18,15 @@ leveling.resources = {
     ]
 }
 
-function getRandomXp() {
-    return Math.floor((Math.random() * 5) + 2)
+function getRandomXp(between) {
+    if (!between) return 0
+    return Math.floor((Math.random() * between[1]) + between[0])
 }
 
 leveling.getRandomXp = getRandomXp
 
 function parseXp(xp) {
-    let xpAmounts = [50, 100, 150, 200]
+    let xpAmounts = [50, 100, 150, 200, 300, 400, 500, 750, 1000]
     let level = 0;
     while (xp > xpAmounts[0]) {
         level++; xp -= xpAmounts[0]
@@ -80,5 +83,67 @@ function roundedClip(context, x, y, width, height, radius) {
 }
 
 leveling.roundedClip = roundedClip
+
+async function levelUpMessageVars(string, userGuildProfile, message, xpGain) {
+
+    let leveling = userGuildProfile.leveling
+    let { beforeGainLevel, afterGainLevel } = {
+        beforeGainLevel: parseXp(leveling.xp),
+        afterGainLevel: parseXp(leveling.xp + xpGain)
+    }
+    return (require('./stringVar'))(string, {
+        "level": {
+            "new": {
+                "number": afterGainLevel.level,
+                "xp": afterGainLevel.xpAmounts[0],
+                "totalXp": userGuildProfile.leveling.xp
+            },
+            "last": {
+                "number": beforeGainLevel.level,
+                "xp": beforeGainLevel.xpAmounts[0],
+                "totalXp": userGuildProfile.leveling.xp - beforeGainLevel.xpAmounts[0]
+            }
+        },
+        "member": {
+            "username": message.author.username,
+            "mention": `<@${message.author.id}>`,
+            "tag": message.author.tag,
+            "nickname": message.member.nickname || message.author.username,
+            "status": {
+                "name": message.member.status
+            }
+        },
+        "empty": "<:Blank1:801947188590411786>"
+    })
+}
+
+leveling.levelUpMessageVars = levelUpMessageVars
+
+function configEmbed (guildData, message, show) {
+    const data = {
+        enabled: guildData.leveling.enabled ? "Enabled" : "Disabled",
+        floorRate: guildData.leveling.xp.rate[0],
+        ceilingRate: guildData.leveling.xp.rate[1],
+        timeout: ms(guildData.leveling.xp.timeout, { long: true }),
+        messageEnabled: guildData.leveling.message.enabled ? "Enabled" : "Disabled",
+        channel: guildData.leveling.message.channel == "ANY" || !message.guild.channels.cache.get(guildData.leveling.message.channel) ? "Anywhere" : `#${message.guild.channels.cache.get(guildData.leveling.message.channel).name}`,
+        embed: guildData.leveling.message.embed ? "Enabled" : "Disabled",
+        content: guildData.leveling.message.content
+    }
+    const embed = new MessageEmbed()
+    .setAuthor(message.guild.name, message.guild.iconURL())
+    .setColor("BLURPLE")
+    .setFooter("Leveling Module Settings", "https://cdn4.iconfinder.com/data/icons/ui-actions/21/gear_cog-256.png")
+    if (show.includes("xp")) {
+        embed.addField('Xp Settings', `\`\`\`This is: ${data.enabled} \nFloor Rate: ${data.floorRate}\nCeiling Rate: ${data.ceilingRate}\nTimeout: ${data.timeout}\`\`\``)
+    }
+    if (show.includes("message")) {
+        embed.addField('Level Up Message Settings', `\`\`\`This is: ${data.messageEnabled} \nEmbed: ${data.embed}\nChannel: ${data.channel}\`\`\``)
+        .addField('Level Up Message Content', `\`\`\`${data.content}\`\`\`\n[Leveling message variables](https://boot.tethys.club/)`)
+    }
+    return embed
+}
+
+leveling.configEmbed = configEmbed
 
 module.exports = leveling

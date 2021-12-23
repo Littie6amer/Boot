@@ -1,110 +1,134 @@
 const utils = require('../../utils')
-const d = utils.emojis.d; const b = utils.emojis.b
+const command = new utils.Command()
 const Canvas = require('canvas');
 Canvas.registerFont('fonts/OpenSans-Bold.ttf', { family: 'Open Sans Bold' })
 const getColors = require('get-image-colors')
 const guildProfileSc = require('../../schemas/guildProfile')
-const { MessageEmbed, MessageAttachment } = require('discord.js');
+const { MessageEmbed, MessageAttachment, MessageActionRow, MessageButton, Interaction } = require('discord.js');
 
-module.exports = {
-    name: "rank",
-    aka: ['level', 'l'],
-    config: {
+command.create(["rank", "level", "l"])
+    .setExecute(execute)
+    .addButton("rank:", execute, false)
+
+module.exports = command
+
+async function execute(toolbox) {
+    const { message, args, client, guildData, interaction } = toolbox
+
+    const values = interaction?.customId.slice("rank:".length).split('/#~~#/')
+    if (values && (values[0] != interaction.member.id)) return
+
+    if (!guildData.leveling.enabled) {
+        const embed = new MessageEmbed()
+        .setAuthor(`Leveling - ${message.guild.name}`, message.guild.iconURL())
+        .setDescription('<a:redcross:868671069786099752> Leveling module disabled!')
+        .setColor('RED')
+        return message.reply({ embeds: [embed] })
+    }
+
+    const { rbgToHex, findBrightestColor } = utils
+    const { resources, parseXp, applyBackground, roundedRect, roundedClip } = utils.leveling
+
+    const config = {
         "useSolidColorBackground": false,
         "showGuildName": false,
-        "showUserAvatar": true,
-        "embed": true
-    },
-    async run(toolbox) {
-        const { message, args, client } = toolbox
-        const { rbgToHex, findBrightestColor } = toolbox.utils
-        const { resources, parseXp, applyBackground, roundedRect, roundedClip } = toolbox.utils.leveling
+        "showUserAvatar": true
+    }
 
-        let user;
-        
-        if (args[0]) {
-            try { user = await client.users.fetch(args[0]) } catch {}
-        }
-        
-        if (message.mentions.members.first() && !user) {
-            user = message.mentions.members.first().user
-        }
-        
-        if (!user) {
-            user = message.author
-        }
-        
-        const mentionedGuildProfile = await guildProfileSc.findOne({
-            guildId: message.guild.id,
-            userId: user.id
-        })
-        
-        let { level, xp, xpAmounts } = parseXp(mentionedGuildProfile?.leveling.xp||0)
+    let user, member;
 
-        const colors = await getColors(user.displayAvatarURL({ format: 'png' }))
+    if (args && args[0]) {
+        try { user = await client.users.fetch(args[0]) } catch { }
+        if (user && message.guild.members.cache.get(user.id)) member = message.guild.members.cache.get(user.id)
+    }
 
-        const canvas = Canvas.createCanvas(560, this.config.showGuildName ? 200 : 155)
-        const context = canvas.getContext('2d')
+    if (message && message.mentions.members.first() && !user) {
+        user = message.mentions.members.first().user
+        member = message.mentions.members.first()
+    }
 
-        // drawing card background
-        const provided = this.config.useSolidColorBackground ? resources.solidBackgroundColors : resources.backgroundImages
-        await applyBackground(canvas, context, provided[Math.floor(Math.random() * provided.length)])
+    if (!user) {
+        user = message ? message.author : interaction.member.user
+        member = message ? message.member : interaction.member
+    }
 
-        // guild text box background
-        context.fillStyle = "#000000cc"
-        if (this.config.showGuildName ) context.fillRect(10, 10, 540, 35)
+    const mentionedGuildProfile = await guildProfileSc.findOne({
+        guildId: message ? message.guild.id : interaction.guild.id,
+        userId: user.id
+    })
 
-        // guild text
-        context.fillStyle = "#fff"
-        context.font = '25px Open Sans Bold'
-        context.textAlign = "center"
-        if (this.config.showGuildName ) context.fillText(message.guild.name, 280, 35)
-        context.textAlign = "left"
+    let { level, xp, xpAmounts } = parseXp(mentionedGuildProfile?.leveling.xp || 0)
 
-        // profile card background
-        context.fillStyle = "#000000cc"
-        roundedRect(context, 10, this.config.showGuildName  ? 50 : 10, 540, 140, 15)
+    const colors = await getColors(user.displayAvatarURL({ format: 'png' }))
 
-        // username text
-        context.fillStyle = "#fff"
-        context.font = '20px Open Sans Bold'
-        context.fillText(user.username, this.config.showUserAvatar ? 80 : 20, this.config.showGuildName  ? 90 : 55)
+    const canvas = Canvas.createCanvas(560, config.showGuildName ? 200 : 155)
+    const context = canvas.getContext('2d')
 
-        // progress bar outline
-        context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
-        roundedRect(context, 20, this.config.showGuildName  ? 120 : 85, 520, 18, 9)
+    // drawing card background
+    const provided = config.useSolidColorBackground ? resources.solidBackgroundColors : resources.backgroundImages
+    await applyBackground(canvas, context, provided[Math.floor(Math.random() * provided.length)])
 
-        // progress background color
-        context.fillStyle = "#000000"
-        roundedRect(context, 21, this.config.showGuildName  ? 121 : 86, 518, 16, 9)
+    // background overlay
+    context.fillStyle = "#010023AA"
+    context.fillRect(0, 0, canvas.width, canvas.height)
 
-        // progress bar 
-        context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
-        if (xp) roundedRect(context, 21, this.config.showGuildName  ? 121 : 86, (xp / xpAmounts[0]) * 518, 16, 9)
+    // guild text
+    context.fillStyle = "#fff"
+    context.font = '25px Open Sans Bold'
+    context.textAlign = "center"
+    if (config.showGuildName) context.fillText(message.guild.name, 280, 35)
+    context.textAlign = "left"
 
-        // level text
-        context.fillStyle = "#fff"
-        context.font = '18px Open Sans Bold'
-        context.fillText(`Level ${level}`, 20, this.config.showGuildName  ? 170 : 135)
+    // username text
+    context.fillStyle = "#fff"
+    context.font = '20px Open Sans Bold'
+    context.fillText(user.username.toUpperCase(), config.showUserAvatar ? 80 : 20, config.showGuildName ? 68 : 38)
 
-        // xp text
-        context.fillStyle = "#fff"
-        context.font = '18px Open Sans Bold'
-        context.textAlign = "right"
-        context.fillText(`${xp} / ${xpAmounts[0]} XP`, 535, this.config.showGuildName  ? 170 : 135)
+    // role text
+    context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
+    context.fillText("NO REWARD YET", config.showUserAvatar ? 80 : 20, config.showGuildName ? 92 : 62)
 
-        // avatar drawing
-        const avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'jpg' }));
-        roundedClip(context, 20, this.config.showGuildName  ? 60 : 25, 45, 45, 15);
-        if (this.config.showUserAvatar) context.drawImage(avatar, 20, this.config.showGuildName  ? 60 : 25, 45, 45);
+    // progress background color
+    context.fillStyle = "#000000AA"
+    roundedRect(context, 20, config.showGuildName ? 120 : 85, 512, 18, 10)
 
-        const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
+    // progress bar 
+    context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
+    if (xp) roundedRect(context, 20, config.showGuildName ? 120 : 85, (xp / xpAmounts[0]) * 520, 18, 10)
 
-        const embed = new MessageEmbed()
-        .setAuthor(message.guild.name, message.guild.iconURL())
-        .setDescription('View message stats with `!!activity`')
-        .setImage('attachment://profile-image.png')
-        .setColor(findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : 0xbf943d)
-        message.reply({ files: [attachment], embeds: [embed] })
+    // level text
+    context.textAlign = "right"
+    context.fillStyle = "#fff"
+    context.font = '20px Open Sans Bold'
+    context.fillText(`LEVEL ${level || 0}`, 535, config.showGuildName ? 92 : 62)
+
+    // xp text
+    context.fillStyle = "#fff"
+    context.font = '20px Open Sans Bold'
+    context.fillText(`${xp || 0} / ${xpAmounts[0]} XP`, 535, config.showGuildName ? 68 : 38)
+
+    // message text
+    context.textAlign = "center"
+    context.fillStyle = "#fff"
+    context.font = '20px Open Sans Bold'
+    context.fillText(`${mentionedGuildProfile?.activity?.overall?.messages || 0} MESSAGES`, canvas.width / 2, config.showGuildName ? 185 : 135)
+
+    // avatar drawing
+    const avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));
+    roundedClip(context, 20, config.showGuildName ? 50 : 20, 45, 45, 5);
+    if (config.showUserAvatar) context.drawImage(avatar, 20, config.showGuildName ? 50 : 20, 45, 45);
+
+    const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
+
+    const components = [new MessageActionRow().addComponents([
+        new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
+        new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
+    ])]
+
+    if (interaction?.message) {
+        interaction.deferUpdate()
+        interaction.message.edit({ files: [attachment], components, embeds: [] })
+    } else {
+        message.reply({ files: [attachment], components })
     }
 }

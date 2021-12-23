@@ -1,15 +1,52 @@
 const mongoose = require('mongoose');
 
 const guildProfileSc = new mongoose.Schema({
-  guildId: Number,
-  userId: Number,
+  guildId: String,
+  userId: String,
   leveling: {
-      xp: Number,
-      level: Number,
-      messages: Number,
-      lastXpTimestamp: Number
+    xp: {
+      type: Number,
+      default: 0
+    },
+    messages: {
+      type: Number,
+      default: 0
+    },
+    lastXpTimestamp: {
+      type: Number,
+      default: null
+    }
   },
-  activity: JSON
+  activity: {
+    overall: {
+      messages: {
+        type: Number,
+        default: 0
+      },
+      replies: {
+        type: Number,
+        default: 0
+      },
+      spam: {
+        type: Number,
+        default: 0
+      }
+    },
+    channels: {
+      type: Array,
+      default: []
+    },
+    spamTimestamp: {
+      type: Number
+    },
+    spamBuildup: {
+      type: Number
+    }
+  },
+  bypass: {
+    default: false,
+    type: Boolean
+  }
 })
 
-module.exports = mongoose.model('guildProfiles', guildProfileSc)
+module.exports = new mongoose.model('guildprofiles', guildProfileSc)

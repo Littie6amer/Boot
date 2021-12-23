@@ -35,7 +35,7 @@ function findBrightestColor(arr) {
 
 utils.findBrightestColor = findBrightestColor
 
-utils.colors = {gold: "bf943d"}
+utils.colors = {gold: "bf943d", christmasGreen: "529b3a"}
 
 utils.emojis = {b: "<:Blank1:801947188590411786>", d: "<:dot:871478724439179306>"}
 
@@ -44,5 +44,11 @@ utils.embeds = require('./embeds')
 utils.stringVars = require('./stringVar')
 
 utils.leveling = require('./leveling')
+
+utils.Command = require('./commandBase')
+
+utils.testmedaddy = require('./testmedaddy')
+
+utils.branch = "Recent"
 
 module.exports = utils

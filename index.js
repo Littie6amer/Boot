@@ -1,47 +1,38 @@
-const { Client, Collection, Structures } = require('discord.js')
 require('dotenv').config()
-
+const fs = require('fs')
+const { Client } = require('discord.js')
 const client = new Client({
-    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"]
+    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"],
 })
 
-const fs = require('fs')
-const config = require('./data/config.json')
-
-// Database Stuff
+// Connect to the database
 
 const mongoose = require('mongoose', {
     keepAlive: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false,
+    useFindAndModify: false
 })
-const url  = process.env.dbToken
-mongoose.connect(url).then(() => console.log('[Mongoose]: Connected!'))
+const url = process.env.dbToken
+mongoose.connect(url).then(() => console.log(`${Math.floor(process.uptime()*1000)} [Mongoose]: Connected!`))
+
+// Load commands
+
+const loader = require('./loader')
+Object.assign(client, loader, { cooldowns: {} })
 
 // Create Listeners
+
 fs.readdirSync('./events').forEach(e => {
     if (!e.endsWith('.js')) return
-    client.on(e.slice(0, -3), (a , b) => {
-        (require('./events/'+e))(client, a, b)
+    client.on(e.slice(0, -3), (a, b) => {
+        (require('./events/' + e))(client, a, b).catch(e => {
+            console.log(`[Boot Manager Error]: Code error with the ${e} listener`)
+            console.log(`~~~`)
+            return console.error(e);
+        })
     })
 })
-
-// Load Commands
-client.commands = new Collection()
-loadFolder('./commands')
-function loadFolder (path) {
-    fs.readdirSync(path).forEach(c => {
-        let path_ = path+'/'+c
-        if (!path_.slice(1).includes('.')) {
-            loadFolder(path_)
-        }
-        if (!path_.endsWith('.js')) {} else {
-            c = require(path_)
-            client.commands.set(c.name, c)
-        }
-    })
-}
 
 // Login to the bot
 

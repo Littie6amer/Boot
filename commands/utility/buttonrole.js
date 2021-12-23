@@ -1,13 +1,16 @@
 const utils = require('../../utils')
-const d = utils.emojis.d; const b = utils.emojis.b
-const { MessageButton, MessageActionRow, MessageSelectMenu, MessageEmbed } = require('discord.js');
-const { Command } = require('../../utils');
+const Command = utils.Command
+const guildProfileSc = require('../../schemas/guildProfile')
+const { MessageButton, MessageActionRow, MessageSelectMenu, MessageEmbed } = require('discord.js')
+const guildDataSc = require('../../schemas/guildData')
 
 const command = module.exports = new Command()
 
-command.create(["selectionroles", "sr", "selects", "rolelist", "rl"])
+command
+    .create(["buttonrole", "br", "buttons"], "Create a button list of roles!")
     .setExecute(execute)
-    .addDropOption("roleList", [""], roleExecute, false)
+    .addButton("br:", roleExecute, false)
+
 
 async function execute(toolbox) {
     const { message, client, args } = toolbox
@@ -24,7 +27,10 @@ async function execute(toolbox) {
 
     let pos
     for (let word in args) {
-        if (message.guild.roles.cache.get(args[word].replace(`<`, '').replace(`@`, '').replace(`&`, '').replace(`!`, '').replace(`>`, '')) && !pos) {
+        if (
+            message.guild.roles.cache.get(args[word]
+                .replace(`<`, '').replace(`@`, '').replace(`&`, '').replace(`!`, '').replace(`>`, '')) && !pos
+        ) {
             pos = word
         }
     }
@@ -35,34 +41,28 @@ async function execute(toolbox) {
         return message.reply({ embeds: [embed] })
     }
 
-    let embeds = [
-        new MessageEmbed()
-            .setDescription(args.slice(0, pos).join(' '))
-            .setColor(colors[0]._rgb)
-    ]
+    const embeds = [new MessageEmbed()
+        .setDescription(args.slice(0, pos).join(' '))
+        .setColor(0xbf943d)
+        .setFooter('Select the buttons below to add/remove a role')]
 
-    let options = [];
-    let ids = []
+    let options = []; let ids = []
 
     args.slice(pos).forEach(role => {
-        if (options > 24) { } else {
+        if (options > 4) { } else {
             role = role.replace(`<`, '').replace(`@`, '').replace(`&`, '').replace(`!`, '').replace(`>`, '')
             if (message.guild.roles.cache.get(role) && !ids.includes(role)) {
                 if (message.member.roles.highest.position <= message.guild.roles.cache.get(role).position) return message.reply({ content: `You don't have perms to add **${message.guild.roles.cache.get(role).name}** role` });
                 if (message.guild.me.roles.highest.position <= message.guild.roles.cache.get(role).position) return message.reply({ content: `I don't have perms to add **${message.guild.roles.cache.get(role).name}** role` });
-                options.push({ label: message.guild.roles.cache.get(role).name, description: 'Select to add/remove this role!', value: role },)
+                options.push({ "type": 2, "label": message.guild.roles.cache.get(role).name, "style": 2, "custom_id": "br:" + role })
                 ids.push(role)
             }
         }
     });
+    console.log(ids)
 
     const row = new MessageActionRow()
-        .addComponents(
-            new MessageSelectMenu()
-                .setCustomId('roleList')
-                .setPlaceholder('Select a role..')
-                .addOptions(options),
-        );
+        .addComponents(options);
 
     if (message.guild.me.permissionsIn(message.channel.id).has('MANAGE_MESSAGES')) { message.delete() }
 
@@ -72,7 +72,7 @@ async function execute(toolbox) {
 
 function roleExecute(toolbox) {
     const { interaction } = toolbox
-    const { values } = interaction
+    const values = interaction?.customId.slice("br:".length).split('/#~~#/') || []
 
     let role = interaction.message.guild.roles.cache.get(values[0])
     if (!interaction.message.guild.me.permissions.has('MANAGE_ROLES')) return interaction.reply({ ephemeral: true, content: `I am unable to add role **${role.name}**, check my permissions!` });
@@ -85,6 +85,5 @@ function roleExecute(toolbox) {
             interaction.member.roles.add(role.id)
             interaction.reply({ ephemeral: true, content: `You were given **${role.name}** role` })
         }
-        interaction.message.edit({ components: interaction.message.components })
     }
 }

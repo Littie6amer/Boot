@@ -1,16 +1,24 @@
 const Discord = require('discord.js')
 
 const embeds = {
-  async helpEmbed (command, message, usage) {
-    const collection = []
-    for (item in usage) {
-      collection.push(`\n<:Blank1:801947188590411786><a:check:868670956716052510> \`${require('../data/config.json').prefixes[0]}${command.name}${usage[item]}\``)
-    }
+  async simpleUsageEmbed (command, usage) {
     let embed = new Discord.MessageEmbed()
         .setColor('bf943d')
-        .setDescription(`\`${require('../data/config.json').prefixes[0]}${command.name}${command.args}\``)
-        .addField('Command Function', `<:Blank1:801947188590411786>${command.description}`)
-        .addField('Command Usage', `<:Blank1:801947188590411786><a:red_cross:868671069786099752> \`${message.content}\`${collection.join('')}`)
+        .setAuthor(`${command.names[0]} command`.toUpperCase())
+        .setDescription(command.description)
+        .addField("COMMAND USAGE", `<:smallboot:901130192007864350> \`${require('../data/config.json').prefixes[0]}${command.names[0]}${usage}\``)
+        return embed
+  },
+  async subCommandList (command, list) {
+    const lists = []
+    Object.keys(list).forEach(l => {
+      lists.push({name: l.toUpperCase(), value: `<:smallboot:901130192007864350> \`${command.names[0]} ${list[l].join(`\`\n<:smallboot:901130192007864350> \`${command.names[0]} `)}\``})
+    });
+    let embed = new Discord.MessageEmbed()
+        .setColor('bf943d')
+        .setAuthor(`${command.names[0]} command`.toUpperCase())
+        .setDescription(command.description)
+        .addFields(lists)
         return embed
   }
 }
