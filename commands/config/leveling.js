@@ -43,11 +43,11 @@ async function execute(toolbox) {
 
     components = [
         new MessageActionRow().addComponents([
-            new MessageButton()
-                .setCustomId("leveling:rewards" + (interaction?.member.id || message.member.id))
-                .setLabel('Rewards')
-                .setEmoji("🎄")
-                .setStyle("SECONDARY"),
+            // new MessageButton()
+            //     .setCustomId("leveling:rewards" + (interaction?.member.id || message.member.id))
+            //     .setLabel('Rewards')
+            //     .setEmoji("🎄")
+            //     .setStyle("SECONDARY"),
             new MessageButton()
                 .setCustomId("leveling:commands" + (interaction?.member.id || message.member.id))
                 .setLabel('Commands')

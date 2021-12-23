@@ -14,6 +14,7 @@ command
 
 async function execute(toolbox) {
     const { message, client, args } = toolbox
+    const owner = await message.guild.fetchOwner()
 
     if (!args[0]) {
         const embed = await utils.embeds.simpleUsageEmbed(command, " [Embed Content] @Role @Role @Role...")
@@ -46,19 +47,33 @@ async function execute(toolbox) {
         .setColor(0xbf943d)
         .setFooter('Select the buttons below to add/remove a role')]
 
-    let options = []; let ids = []
+    let options = []; let ids = [];
+    let fail;
 
     args.slice(pos).forEach(role => {
-        if (options > 4) { } else {
+        if (options > 4 || fail) { } else {
             role = role.replace(`<`, '').replace(`@`, '').replace(`&`, '').replace(`!`, '').replace(`>`, '')
+            console.log(role)
             if (message.guild.roles.cache.get(role) && !ids.includes(role)) {
-                if (message.member.roles.highest.position <= message.guild.roles.cache.get(role).position) return message.reply({ content: `You don't have perms to add **${message.guild.roles.cache.get(role).name}** role` });
-                if (message.guild.me.roles.highest.position <= message.guild.roles.cache.get(role).position) return message.reply({ content: `I don't have perms to add **${message.guild.roles.cache.get(role).name}** role` });
+                if (owner.id != message.author.id && message.member.roles.highest.position <= message.guild.roles.cache.get(role).position) {
+                    fail = true
+                    return message.channel.send({ content: `You don't have perms to add **${message.guild.roles.cache.get(role).name}** role` });
+                }
+                if (message.guild.me.roles.highest.position <= message.guild.roles.cache.get(role).position) {
+                    fail = true
+                    return message.channel.send({ content: `I don't have perms to add **${message.guild.roles.cache.get(role).name}** role` });
+                } 
+                if (message.guild.roles.cache.get(role).managed) {
+                    fail = true
+                    return message.channel.send({ content: `**${message.guild.roles.cache.get(role).name}** role is unaddable` });
+                }
                 options.push({ "type": 2, "label": message.guild.roles.cache.get(role).name, "style": 2, "custom_id": "br:" + role })
                 ids.push(role)
             }
         }
     });
+
+    if (fail) return
     console.log(ids)
 
     const row = new MessageActionRow()
@@ -66,6 +81,8 @@ async function execute(toolbox) {
 
     if (message.guild.me.permissionsIn(message.channel.id).has('MANAGE_MESSAGES')) { message.delete() }
 
+    console.log(row)
+    //message.channel.send("Debugging things")
     message.channel.send({ embeds, ephemeral: true, components: [row] })
 
 }

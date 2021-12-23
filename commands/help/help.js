@@ -6,7 +6,7 @@ command
     .create(["help", "intro", "i", "h", "info", "stats", "botinfo"])
     .setExecute(execute)
     .addDropOption("help:select", ["helpP1", "helpP2", "helpP3", "helpP4"], dropDownExecute, false)
-    .addButton("help:showall", showallExecute, false)
+    .addButton("help:commands", commandsExecute, false)
     .addButton("help:info", infoExecute, false)
     .addButton("help:back", execute, false)
     .makeSlashCommand()
@@ -38,7 +38,7 @@ function execute(toolbox) {
                 .setLabel('Activity Module')
                 .setStyle("SECONDARY"),
             new MessageButton()
-                .setCustomId("help:roleselection" + input.member.id)
+                .setCustomId("help:commands" + input.member.id)
                 .setLabel('Commands')
                 .setStyle("PRIMARY"),
         ]),
@@ -172,6 +172,34 @@ function showallExecute(toolbox) {
         .addField('Leveling', `<:smallboot:901130192007864350> level\n<:smallboot:901130192007864350> leveling-settings`, true)
         .addField('General Rewards', `<:smallboot:901130192007864350> rewards\n<:smallboot:901130192007864350> reward-settings`, true)
         .addField('Activity Tracking', `<:smallboot:901130192007864350> activity\n<:smallboot:901130192007864350> activity-settings`, true)
+        .setColor(utils.colors.christmasGreen)
+
+    const components = [
+        new MessageActionRow().addComponents([
+            new MessageButton()
+                .setCustomId("help:back" + values[0])
+                .setLabel('Back')
+                .setStyle("DANGER")
+        ])
+    ]
+
+    if (values[0] != interaction.member.id) return
+
+    interaction.deferUpdate()
+    return interaction.message.edit({ embeds: [embed], components })
+}
+
+function commandsExecute(toolbox) {
+    const { interaction, client } = toolbox
+    const values = interaction.customId.slice("help:commands".length).split('/#~~#/')
+    const embed = new MessageEmbed()
+        .setAuthor(`${client.user.username}`)
+        .setThumbnail(client.user.avatarURL())
+        .setDescription('Important Commands')
+        .addField('Role Selectors', `\`!!buttonrole\`\n\`!!rolelist\``,)
+        .addField('Discord Bot Management', `\`!!botlist\`\n\`!!invite\``)
+        .addField('Leveling', `\`!!rank\`\n\`!!leveling\``)
+        .addField('Activity', `\`!!messages\`\n\`!!activity\``)
         .setColor(utils.colors.christmasGreen)
 
     const components = [

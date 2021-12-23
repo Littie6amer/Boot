@@ -1,3 +1,5 @@
+const { MessageEmbed } = require('discord.js');
+
 const utils = {};
 
 function rbgToHex(rgb) {
@@ -35,9 +37,9 @@ function findBrightestColor(arr) {
 
 utils.findBrightestColor = findBrightestColor
 
-utils.colors = {gold: "bf943d", christmasGreen: "529b3a"}
+utils.colors = { gold: "bf943d", christmasGreen: "529b3a" }
 
-utils.emojis = {b: "<:Blank1:801947188590411786>", d: "<:dot:871478724439179306>"}
+utils.emojis = { b: "<:Blank1:801947188590411786>", d: "<:dot:871478724439179306>" }
 
 utils.embeds = require('./embeds')
 
@@ -50,5 +52,21 @@ utils.Command = require('./commandBase')
 utils.testmedaddy = require('./testmedaddy')
 
 utils.branch = "Recent"
+
+function configEmbed(guildData, message) {
+    const data = {
+        enabled: guildData.leveling.enabled ? "Enabled" : "Disabled",
+    }
+    const embed = new MessageEmbed()
+        .setAuthor(message.guild.name, message.guild.iconURL())
+        .setColor("BLURPLE")
+        .setFooter("Activity Module Settings", "https://cdn4.iconfinder.com/data/icons/ui-actions/21/gear_cog-256.png")
+        .addField('Activity', `\`\`\`This is: ${data.enabled}\`\`\``)
+
+    return embed
+}
+
+utils.activity = {}
+utils.activity.configEmbed = configEmbed
 
 module.exports = utils

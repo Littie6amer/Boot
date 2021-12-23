@@ -5,7 +5,7 @@ const { Command, stringVars } = require('../../utils');
 const command = module.exports = new Command()
 
 command.create(["testmedaddy", "test"])
-    .setExecute(stringVarTest)
+    .setExecute(execute)
 
 async function execute (toolbox) {
     const { message, args } = toolbox
