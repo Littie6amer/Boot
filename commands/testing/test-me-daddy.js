@@ -58,9 +58,3 @@ async function execute (toolbox) {
 
     message.reply({ files: [attachment] });
 }
-
-async function stringVarTest (toolbox) {
-    const { message, args } = toolbox
-
-    message.channel.send(await stringVars(args.join(' '), {"boomer": "dad?"}))
-}
