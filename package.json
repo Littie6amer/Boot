@@ -16,7 +16,8 @@
   "scripts": {
     "deploy": "node deployer",
     "start": "node index",
-    "verify": "node loader"
+    "verify": "node loader",
+    "production": "pm2 deploy ecosystem.config.js production --force"
   },
   "repository": {
     "type": "git",
