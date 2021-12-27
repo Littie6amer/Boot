@@ -10,6 +10,7 @@ command.create(["testmedaddy", "test"])
 async function execute (toolbox) {
     const { message, args } = toolbox
     const { measureContent, findHighestColor, writeContent } = utils.testmedaddy
+    if (utils.branch == "release") return;
 
     // return console.log(await measureContent(message.content)+' <-- the function returned a value')
     const canvas = Canvas.createCanvas(800, 130 + (await measureContent(message.content)) * 29);

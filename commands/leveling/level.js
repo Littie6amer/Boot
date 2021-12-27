@@ -17,7 +17,7 @@ async function execute(toolbox) {
 
     const values = interaction?.customId.slice("rank:".length).split('/#~~#/')
     if (values && (values[0] != interaction.member.id)) return
-
+    
     if (!guildData.leveling.enabled) {
         const embed = new MessageEmbed()
         .setAuthor(`Leveling - ${message.guild.name}`, message.guild.iconURL())

@@ -22,6 +22,7 @@ async function execute(toolbox) {
     const schema = guildDataSc.schema.obj.leveling
 
     if (values.length && values[0] != interaction.member.id) return
+    if ((utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) return message.channel.send("Please use <@876399663002042380> instead!")
 
     let embed = new MessageEmbed()
         .setColor("#529b3a")

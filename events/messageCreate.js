@@ -38,7 +38,7 @@ module.exports = async (client, message) => {
         first = true
     }
     
-    if (guildData.activity.enabled) {
+    if (guildData.activity.enabled && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.activity.channels.find(c => c.id == message.channel.id)) userGuildProfile.activity.channels.push({ id: message.channel.id, messages: 0, replies: 0, spam: 0 })
 
@@ -65,7 +65,7 @@ module.exports = async (client, message) => {
 
     }
 
-    if (guildData.leveling.enabled && !message.spam) {
+    if (guildData.leveling.enabled && !message.spam && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.leveling.lastXpTimestamp || Date.now() - userGuildProfile.leveling.lastXpTimestamp >= guildData.leveling.xp.timeout) {
 
