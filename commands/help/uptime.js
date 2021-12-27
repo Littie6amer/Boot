@@ -13,7 +13,7 @@ function execute(toolbox) {
     const {interaction, message, client} = toolbox
     const input = interaction || message
 
-    const content = `:alarm_clock:<:blank:903396040089141258>${ms(Math.floor(client.uptime), { long: true })}`
+    const content = `:alarm_clock:<:Blank1:801947188590411786>${ms(Math.floor(client.uptime), { long: true })}`
 
     input.reply({ content })
 }

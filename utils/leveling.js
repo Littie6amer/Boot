@@ -40,7 +40,7 @@ leveling.parseXp = parseXp
 async function applyBackground(canvas, context, provided) {
     if (provided.startsWith('#')) {
         context.fillStyle = provided
-        context.fillRect(0, 0, canvas.width, canvas.height)
+        roundedRect(context, 0, 0, canvas.width, canvas.height, 20)
     } else {
         const image = await Canvas.loadImage(provided);
         context.drawImage(image, 0, 0, canvas.width, canvas.height);

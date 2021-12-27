@@ -15,8 +15,10 @@ async function execute(toolbox) {
     const { message, client, userGuildProfile, args } = toolbox
     switch (args[0]?.toLowerCase()) {
         case undefined:
-            const embed = await utils.embeds.subCommandList(command, { "leveling": ["increase-xp", "set-xp", "reset-xp", "reset-user-data"] })
-            message.channel.send({ embeds: [embed] })
+            {
+                const embed = await utils.embeds.subCommandList(command, { "leveling": ["increase-xp", "set-xp", "reset-xp", "reset-user-data"] })
+                message.channel.send({ embeds: [embed] })
+            }
             break
         case "increase-xp":
             {
@@ -75,6 +77,32 @@ async function execute(toolbox) {
                 })
 
                 message.channel.send(`:gear: Guildinfo **reset**`)
+            }
+            break
+        case "leave":
+            {
+                let guild = client.guilds.cache.get(args[1])
+                if (!guild) {
+                    guild = client.guilds.cache.find(g => g.name.toLowerCase().startsWith(args[1].toLowerCase()))
+                }
+
+                if (guild) {
+                    let owner = await guild.fetchOwner()
+                    guild.leave()
+                    message.channel.send(`Left **${guild.name}** which is owned by **${owner.user.tag}**`)
+                } else {
+                    message.channel.send(`Found 0 servers`)
+                }
+            }
+            break
+        case "list-guilds":
+            {
+                let description = []
+                client.guilds.cache.forEach(g => description.push(`**${g.name}:** ${g.memberCount} members (\`${g.id}\`)`))
+                const embed = new MessageEmbed()
+                    .setColor(utils.colors.gold)
+                    .setDescription(description.join('\n'))
+                message.channel.send({ embeds: [embed] })
             }
             break
     }

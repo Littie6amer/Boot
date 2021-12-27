@@ -62,15 +62,10 @@ async function execute(toolbox) {
     const colors = await getColors(user.displayAvatarURL({ format: 'png' }))
 
     const canvas = Canvas.createCanvas(560, config.showGuildName ? 200 : 155)
-    const context = canvas.getContext('2d')
+    const context = canvas.getContext('2d');
 
     // drawing card background
-    const provided = config.useSolidColorBackground ? resources.solidBackgroundColors : resources.backgroundImages
-    await applyBackground(canvas, context, provided[Math.floor(Math.random() * provided.length)])
-
-    // background overlay
-    context.fillStyle = "#010023AA"
-    context.fillRect(0, 0, canvas.width, canvas.height)
+    await applyBackground(canvas, context, "#202225")
 
     // guild text
     context.fillStyle = "#fff"
@@ -82,11 +77,11 @@ async function execute(toolbox) {
     // username text
     context.fillStyle = "#fff"
     context.font = '20px Open Sans Bold'
-    context.fillText(user.username.toUpperCase(), config.showUserAvatar ? 80 : 20, config.showGuildName ? 68 : 38)
+    context.fillText(user.username.toLowerCase(), config.showUserAvatar ? 80 : 20, config.showGuildName ? 68 : 38)
 
     // role text
     context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
-    context.fillText("NO REWARD YET", config.showUserAvatar ? 80 : 20, config.showGuildName ? 92 : 62)
+    context.fillText("no reward.", config.showUserAvatar ? 80 : 20, config.showGuildName ? 92 : 62)
 
     // progress background color
     context.fillStyle = "#000000AA"
@@ -100,18 +95,18 @@ async function execute(toolbox) {
     context.textAlign = "right"
     context.fillStyle = "#fff"
     context.font = '20px Open Sans Bold'
-    context.fillText(`LEVEL ${level || 0}`, 535, config.showGuildName ? 92 : 62)
+    context.fillText(`Level ${level || 0}`, 530, config.showGuildName ? 92 : 62)
 
     // xp text
     context.fillStyle = "#fff"
     context.font = '20px Open Sans Bold'
-    context.fillText(`${xp || 0} / ${xpAmounts[0]} XP`, 535, config.showGuildName ? 68 : 38)
+    context.fillText(`${xp || 0} / ${xpAmounts[0]} xp`, 530, config.showGuildName ? 68 : 38)
 
     // message text
     context.textAlign = "center"
     context.fillStyle = "#fff"
     context.font = '20px Open Sans Bold'
-    context.fillText(`${mentionedGuildProfile?.activity?.overall?.messages || 0} MESSAGES`, canvas.width / 2, config.showGuildName ? 185 : 135)
+    context.fillText(`${mentionedGuildProfile?.activity?.overall?.messages || 0} messages`, canvas.width / 2, config.showGuildName ? 185 : 135)
 
     // avatar drawing
     const avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));
@@ -120,15 +115,27 @@ async function execute(toolbox) {
 
     const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
 
-    const components = [new MessageActionRow().addComponents([
+    let components = [new MessageActionRow().addComponents([
         new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
         //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
     ])]
 
     if (interaction?.message) {
         interaction.deferUpdate()
-        interaction.message.edit({ files: [attachment], components, embeds: [] })
+        interaction.message.edit({ files: [attachment], components, embeds: [] }).then(m => {
+            components = [new MessageActionRow().addComponents([
+                new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
+                new MessageButton().setURL(m.attachments.first().url).setStyle('LINK').setLabel("Image Url"),
+            ])]
+            m.edit({ components })
+        })
     } else {
-        message.reply({ files: [attachment], components })
+        message.reply({ files: [attachment], components }).then(m => {
+            components = [new MessageActionRow().addComponents([
+                new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
+                new MessageButton().setURL(m.attachments.first().url).setStyle('LINK').setLabel("Image Url"),
+            ])]
+            m.edit({ components })
+        })
     }
 }

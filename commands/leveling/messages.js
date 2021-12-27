@@ -48,9 +48,9 @@ async function execute(toolbox) {
         channel = mentionedGuildProfile.activity.channels[channel]
         if (message.guild.channels.cache.get(channel.id)) {
             if (message.member.permissions.has("MANAGE_MESSAGES")) {
-                channels.push(`<#${channel.id}> **${channel.messages}** messages, **${channel.replies}** replies, **${channel.spam}** spam`)
+                channels.push(`<#${channel.id}> \`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies<:Blank1:801947188590411786>**${channel.spam}** spam`)
             } else {
-                channels.push(`<#${channel.id}> **${channel.messages}** messages, **${channel.replies}** replies`)
+                channels.push(`<#${channel.id}> \`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies`)
             }
         } else {
             deletedChannelCount++; deletedMesages += channel.messages
@@ -64,13 +64,13 @@ async function execute(toolbox) {
 
     const embed = new MessageEmbed()
         .setAuthor(user.username, user.avatarURL())
-        .setDescription(`${channels?.join('\n') ? `<:smallboot:901130192007864350> ${channels?.join('\n<:smallboot:901130192007864350> ')}` : `<:redboot:902910668091576331> **No data collected on this user**`} ${deletedChannelCount ? `\n<:reply:902678138109194241> **${deletedChannelCount}** deleted channel${deletedChannelCount > 1 ? "s" : ""} with **${deletedMesages}** messages.` : ""}`)
+        .setDescription(`${channels?.join('\n') ? `${channels?.join('\n ')}` : `<:redboot:902910668091576331> **No data collected on this user**`} ${deletedChannelCount ? `\n**Deleted channels** \`${deletedChannelCount} channels\`\n<:Blank1:801947188590411786>**${deletedMesages}** messages` : ""}`)
         .setColor(findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : 0xbf943d)
     if (mentionedGuildProfile?.activity?.overall) {
         if (message.member.permissions.has("MANAGE_MESSAGES")) {
-            embed.addField('Overall', `<:smallboot:901130192007864350> **${mentionedGuildProfile.activity.overall.messages}** messages, **${mentionedGuildProfile.activity.overall.replies}** replies, **${mentionedGuildProfile.activity.overall.spam}** spam`)
+            embed.addField('Overall', `<:Blank1:801947188590411786>**${mentionedGuildProfile.activity.overall.messages}** messages<:Blank1:801947188590411786>**${mentionedGuildProfile.activity.overall.replies}** replies<:Blank1:801947188590411786>**${mentionedGuildProfile.activity.overall.spam}** spam`)
         } else {
-            embed.addField('Overall', `<:smallboot:901130192007864350> **${mentionedGuildProfile.activity.overall.messages}** messages, **${mentionedGuildProfile.activity.overall.replies}** replies`)
+            embed.addField('Overall', `<:Blank1:801947188590411786>**${mentionedGuildProfile.activity.overall.messages}** messages<:Blank1:801947188590411786>**${mentionedGuildProfile.activity.overall.replies}** replies`)
         }
     }
     if (interaction?.message) {
