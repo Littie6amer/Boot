@@ -2,7 +2,7 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
 const guildDataSc = require('../../schemas/guildData')
 const guildProfileSc = require('../../schemas/guildProfile')
 const utils = require('../../utils')
-const { Command } = require('../../utils')
+const { Command, prefixes } = require('../../utils')
 const ms = require('ms')
 
 const command = module.exports = new Command()
@@ -116,8 +116,8 @@ function commandsExecute(toolbox) {
 
     const embed = new MessageEmbed()
         .setAuthor(message.guild.name, message.guild.iconURL())
-        .addField('View your messages', `\`!!messages\``)
-        .addField('Module', `\`!!activity [enable | disable]\`\n\`!!activity data reset\`\n\`!!activity data reset [@user | User ID]\``)
+        .addField('View your messages', `\`${utils.prefixes[0]}messages\``)
+        .addField('Module', `\`${utils.prefixes[0]}activity [enable | disable]\`\n\`${utils.prefixes[0]}activity data reset\`\n\`${utils.prefixes[0]}activity data reset [@user | User ID]\``)
         .setFooter("Module Commands")
         .setColor("BLURPLE")
 

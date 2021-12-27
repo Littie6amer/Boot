@@ -6,7 +6,7 @@ const { parseXp, getRandomXp } = utils.leveling
 const ms = require('ms');
 
 module.exports = async (client, message) => {
-    const { prefixes } = require('../data/config.json')
+    const prefixes = utils.prefixes
     prefixes.push([`<@${client.user.id}>`, `<@!${client.user.id}>`])
 
     message.channel.myPermissions = message.guild.me.permissionsIn(message.channel.id)
@@ -84,7 +84,7 @@ module.exports = async (client, message) => {
 
                 const embed = new MessageEmbed()
                     .setDescription(LevelUpMessage)
-                    .setFooter("View your level and xp progress with !!level")
+                    .setFooter(`View your level and xp progress with ${utils.prefixes[0]}level`)
                     .setColor(0xbf943d)
 
                 const data = {}

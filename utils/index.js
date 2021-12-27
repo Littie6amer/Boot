@@ -35,6 +35,7 @@ function findBrightestColor(arr) {
     return brightest
 }
 
+
 utils.findBrightestColor = findBrightestColor
 
 utils.colors = { gold: "bf943d", christmasGreen: "529b3a" }
@@ -51,7 +52,9 @@ utils.Command = require('./commandBase')
 
 utils.testmedaddy = require('./testmedaddy')
 
-utils.branch = "Recent"
+utils.branch = process.env.branch
+
+utils.prefixes = (require('../data/config.json')).prefixes[utils.branch]
 
 function configEmbed(guildData, message) {
     const data = {

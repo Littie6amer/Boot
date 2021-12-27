@@ -1,5 +1,8 @@
 {
-    "prefixes": ["!!", "boot", "¶"],
+    "prefixes":{
+        "release": ["!!", "boot"],
+        "recent": ["??", "red"]
+    },
     "colors": {
         "PRIMARY": "#b4b4b4"
     },

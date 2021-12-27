@@ -88,7 +88,7 @@ async function execute(toolbox) {
         case "message":
             if (args[1] == "content") {
                 if (!args[2]) {
-                    embed = new MessageEmbed(); embed.setDescription('`!!leveling messsage content [content | reset]`')
+                    embed = new MessageEmbed(); embed.setDescription(`\`${utils.prefixes[0]}leveling messsage content [content | reset]\``)
                         .setColor('RED')
                     message.reply({ embeds: [embed] })
                     break
@@ -126,7 +126,7 @@ async function execute(toolbox) {
                     message.reply({ embeds: [embed] })
                     break
                 }
-                embed = new MessageEmbed(); embed.setDescription('`!!leveling messsage embed [enable | disable]`')
+                embed = new MessageEmbed(); embed.setDescription(`\`${utils.prefixes[0]}leveling messsage embed [enable | disable]\``)
                     .setColor('RED')
                 message.reply({ embeds: [embed] })
                 break
@@ -166,7 +166,7 @@ async function execute(toolbox) {
                 message.reply({ embeds: [embed] })
                 break
             }
-            embed = new MessageEmbed().setDescription('`!!leveling messsage content [content]`\n`!!leveling messsage embed [enable | disable]`\n`!!leveling messsage [enable | disable]`\n`!!leveling messsage channel [#channel | any]`')
+            embed = new MessageEmbed().setDescription(`\`${utils.prefixes[0]}leveling messsage content [content]\`\n\`${utils.prefixes[0]}leveling messsage embed [enable | disable]\`\n\`${utils.prefixes[0]}leveling messsage [enable | disable]\`\n\`${utils.prefixes[0]}leveling messsage channel [#channel | any]\``)
                 .setColor('BLURPLE')
             message.reply({ embeds: [embed] })
             break
@@ -211,7 +211,7 @@ async function execute(toolbox) {
                 message.reply({ embeds: [embed] })
                 break
             }
-            embed = new MessageEmbed(); embed.setDescription('`!!leveling xp rate [Least] [Most]`\n`!!leveling xp timeout [time length]`')
+            embed = new MessageEmbed(); embed.setDescription(`\`${utils.prefixes[0]}leveling xp rate [Least] [Most]\`\n\`!!leveling xp timeout [time length]\``)
                 .setColor('BLURPLE')
             message.reply({ embeds: [embed] })
             break
