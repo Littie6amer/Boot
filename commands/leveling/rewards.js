@@ -8,6 +8,7 @@ const command = module.exports = new Command()
 
 command.create(["rewards", "r"])
     .setExecute(execute)
+    .setRestriction("DEV")
 
 async function execute(toolbox) {
     const { message, args, client } = toolbox

@@ -16,7 +16,10 @@
   "scripts": {
     "deploy": "node deployer",
     "start": "node index",
-    "verify": "node loader"
+    "verify": "node loader",
+    "release": "pm2 deploy ecosystem.config.js release --force",
+    "recent": "pm2 deploy ecosystem.config.js recent --force",
+    "experimental": "pm2 deploy ecosystem.config.js experimental --force"
   },
   "repository": {
     "type": "git",

@@ -122,7 +122,7 @@ async function execute(toolbox) {
 
     const components = [new MessageActionRow().addComponents([
         new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
-        new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
+        //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
     ])]
 
     if (interaction?.message) {

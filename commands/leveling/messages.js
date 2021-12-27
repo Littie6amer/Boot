@@ -59,7 +59,7 @@ async function execute(toolbox) {
 
     const components = [new MessageActionRow().addComponents([
         new MessageButton().setCustomId('rank:' + user.id).setEmoji('👤').setLabel('Rank').setStyle('SECONDARY'),
-        new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
+        //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
     ])]
 
     const embed = new MessageEmbed()
