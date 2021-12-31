@@ -1,7 +1,7 @@
 const utils = require("../utils");
 
 module.exports = async (client) => {
-    client.invites.bugReport = (await client.guilds.cache.get("882345419852632114").invites.fetch({ code: "adYXN5pa8X" })).uses
+    // client.invites.bugReport = (await client.guilds.cache.get("882345419852632114").invites.fetch({ code: "adYXN5pa8X" })).uses
     client.membercount = 0;
     client.guilds.cache.forEach(g => {
         client.membercount += g.memberCount

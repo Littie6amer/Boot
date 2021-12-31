@@ -37,7 +37,7 @@ module.exports = async (client, message) => {
         })
         first = true
     }
-    
+
     if (guildData.activity.enabled && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.activity.channels.find(c => c.id == message.channel.id)) userGuildProfile.activity.channels.push({ id: message.channel.id, messages: 0, replies: 0, spam: 0 })
@@ -106,20 +106,21 @@ module.exports = async (client, message) => {
         }
 
     }
-
-    if (first) {
-        guildProfileSc.updateOne({
-            guildId: message.guild.id,
-            userId: message.author.id,
-        }, userGuildProfile)
-    } else {
-        //userGuildProfile.markModified('leveling', 'leveling.lastXpTimestamp', 'leveling.xp', 'activity', 'activity.spamBuildup', 'activity.spamTimestamp', 'activity.overall', 'activity.overall.messages')
-        userGuildProfile.markModified('activity.channels');
-        await userGuildProfile.save().catch(e => {
-            console.log(`[Boot Manager Error]: Code error with saving leveling data`)
-            console.log(`~~~`)
-            console.error(e);
-        })
+    if (!(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
+        if (first) {
+            guildProfileSc.updateOne({
+                guildId: message.guild.id,
+                userId: message.author.id,
+            }, userGuildProfile)
+        } else {
+            //userGuildProfile.markModified('leveling', 'leveling.lastXpTimestamp', 'leveling.xp', 'activity', 'activity.spamBuildup', 'activity.spamTimestamp', 'activity.overall', 'activity.overall.messages')
+            userGuildProfile.markModified('activity.channels');
+            await userGuildProfile.save().catch(e => {
+                console.log(`[Boot Manager Error]: Code error with saving leveling data`)
+                console.log(`~~~`)
+                console.error(e);
+            })
+        }
     }
 
     if (message.spam || message.deleted) return

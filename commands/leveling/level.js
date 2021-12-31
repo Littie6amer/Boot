@@ -65,7 +65,11 @@ async function execute(toolbox) {
     const context = canvas.getContext('2d');
 
     // drawing card background
-    await applyBackground(canvas, context, "#202225")
+    await applyBackground(canvas, context, utils.leveling.resources.backgroundImages[0])
+    context.fillStyle = "#000000AA"
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    let background = await Canvas.loadImage("https://cdn.discordapp.com/attachments/801524339265503294/925153367263703110/profile-image.png")
+    context.drawImage(background, 0, 0, canvas.width, canvas.height)
 
     // guild text
     context.fillStyle = "#fff"
@@ -94,19 +98,20 @@ async function execute(toolbox) {
     // level text
     context.textAlign = "right"
     context.fillStyle = "#fff"
-    context.font = '20px Open Sans Bold'
-    context.fillText(`Level ${level || 0}`, 530, config.showGuildName ? 92 : 62)
+    context.font = '18px Open Sans Bold'
+    context.fillText(`Level ${level || 0}`, 530, config.showGuildName ? 185 : 135)
 
     // xp text
+    context.textAlign = "left"
     context.fillStyle = "#fff"
-    context.font = '20px Open Sans Bold'
-    context.fillText(`${xp || 0} / ${xpAmounts[0]} xp`, 530, config.showGuildName ? 68 : 38)
+    context.font = '18px Open Sans Bold'
+    context.fillText(`${xp || 0} / ${xpAmounts[0]} Xp`, 20, config.showGuildName ? 185 : 135)
 
     // message text
     context.textAlign = "center"
     context.fillStyle = "#fff"
-    context.font = '20px Open Sans Bold'
-    context.fillText(`${mentionedGuildProfile?.activity?.overall?.messages || 0} messages`, canvas.width / 2, config.showGuildName ? 185 : 135)
+    context.font = '18px Open Sans Bold'
+    context.fillText(`${mentionedGuildProfile?.activity?.overall?.messages || 0} Messages`, canvas.width / 2, config.showGuildName ? 185 : 135)
 
     // avatar drawing
     const avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));

@@ -2,6 +2,7 @@ const { MessageEmbed } = require("discord.js")
 const utils = require("../utils")
 
 module.exports = async (client, member) => {
+    return;
     const bugReport = await client.guilds.cache.get("882345419852632114").invites.fetch()
     if (member.guild.id == "882345419852632114" && client.invites.bugReport < bugReport) {
         member.roles.add("919263466647343164")
