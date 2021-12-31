@@ -1,0 +1,40 @@
+module.exports = {
+  apps : [{
+    script: 'index.js',
+    watch: '.'
+  ,
+
+  deploy : {
+    release : {
+      host : ''
+      ref  : 'origin/release',
+      repo : 'https://github.com/Littie6amer/Litties-Boot',
+      path : '/home/pi',
+      'pre-deploy-local': '',
+      'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production',
+      'pre-setup': ''
+    }
+  }
+};
+module.exports = {
+  apps: [
+    {
+      name: "app",
+      script: "./index.js",
+      env: {
+        NODE_ENV: "development"
+      },
+      env_production: {
+        NODE_ENV: "production"
+      }
+    }
+  ],
+  deploy: {
+    production: {
+      host: SERVER_IP,
+      user: SERVER_USER,
+      ref: REPO_BRANCH, // (use 'origin/master' for your master branch,
+      repo: "git@bitbucket.org:{USER_NAME}/{REPO_NAME}.git", // your repo url
+      path: "/var/app/repositories",
+      "post-deploy":
+        "npm install && pm2 reload ecosy
