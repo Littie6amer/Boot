@@ -3,10 +3,8 @@ const Discord = require('discord.js')
 const embeds = {
   async simpleUsageEmbed (command, usage) {
     let embed = new Discord.MessageEmbed()
-        .setColor('bf943d')
-        .setAuthor(`${command.names[0]} command`.toUpperCase())
-        .setDescription(command.description)
-        .addField("COMMAND USAGE", `<:smallboot:901130192007864350> \`${require('../data/config.json').prefixes[0]}${command.names[0]}${usage}\``)
+        .setColor('BLURPLE')
+        .setDescription(command.description+`\n\`\`\`${require(".").prefixes[0]}${command.names[0]}${usage}\`\`\``)
         return embed
   },
   async subCommandList (command, list) {

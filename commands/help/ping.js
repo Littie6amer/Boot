@@ -13,12 +13,12 @@ function execute(toolbox) {
     const input = interaction || message
     
     let color;
-
+    
     if        (client.ws.ping > 100)  { color = "red" } 
     else if   (client.ws.ping > 50)   { color = "yellow" } 
     else                              { color = "green" }
-
+    
     const content = `:ping_pong: **Pong!**\n\n:${color}_circle: \`${client.ws.ping}ms\``
-
+    
     input.reply({ content })
 }

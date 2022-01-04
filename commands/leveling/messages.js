@@ -18,7 +18,7 @@ async function execute(toolbox) {
     const input = interaction || message
 
     const values = interaction?.customId.slice("messages:".length).split('/#~~#/')
-    if (values && (values[0] != interaction.member.id)) return
+    if (values && (values[1] != interaction.member.id)) return
 
     let user;
 
@@ -48,9 +48,9 @@ async function execute(toolbox) {
         channel = mentionedGuildProfile.activity.channels[channel]
         if (message.guild.channels.cache.get(channel.id)) {
             if (message.member.permissions.has("MANAGE_MESSAGES")) {
-                channels.push(`<#${channel.id}> \`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies<:Blank1:801947188590411786>**${channel.spam}** spam`)
+                channels.push(`\`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies<:Blank1:801947188590411786>**${channel.spam}** spam`)
             } else {
-                channels.push(`<#${channel.id}> \`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies`)
+                channels.push(`\`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies`)
             }
         } else {
             deletedChannelCount++; deletedMesages += channel.messages
@@ -58,7 +58,7 @@ async function execute(toolbox) {
     })
 
     const components = [new MessageActionRow().addComponents([
-        new MessageButton().setCustomId('rank:' + user.id).setEmoji('👤').setLabel('Rank').setStyle('SECONDARY'),
+        new MessageButton().setCustomId('rank:' + user.id + "/#~~#/" + input.member.id).setEmoji('👤').setLabel('Rank').setStyle('SECONDARY'),
         //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
     ])]
 
