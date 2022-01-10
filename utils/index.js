@@ -72,4 +72,6 @@ function configEmbed(guildData, message) {
 utils.activity = {}
 utils.activity.configEmbed = configEmbed
 
+utils.getEmojiData = (require("./emojis")).getEmojiData
+
 module.exports = utils

@@ -17,25 +17,25 @@ async function execute(toolbox) {
     const owner = await message.guild.fetchOwner()
 
     if (!args[0]) {
-        const embed = await utils.embeds.simpleUsageEmbed(command, ` "[Embed Content]" (:emoji: @Role) (:emoji: @Role) (:emoji: @Role)`)
+        const embed = await utils.embeds.simpleUsageEmbed(command, ` "[Title]" (:emoji: @Role) (:emoji: @Role) (:emoji: @Role)`)
         return message.reply({ embeds: [embed] })
     }
     if (!message.member.permissions.has('MANAGE_ROLES')) return message.reply({ content: `You dont have perms to add roles!` });
     if (!message.guild.me.permissions.has('MANAGE_ROLES')) return message.reply({ content: `I am unable to add roles, check my permissions!` });
 
     if (!args[0].startsWith("\"") || !args[args.length-1].endsWith(")") || !args.join(" ").slice(1, -1).split("\" (")[1]) {
-        const embed = await utils.embeds.simpleUsageEmbed(command, ` "[Embed Content]" (:emoji: @Role) (:emoji: @Role) (:emoji: @Role)`)
+        const embed = await utils.embeds.simpleUsageEmbed(command, ` "[Title]" (:emoji: @Role) (:emoji: @Role) (:emoji: @Role)`)
         return message.reply({ embeds: [embed] })
     }
     const options = args.join(" ").slice(1, -1).split("\" (").join(") (").split(") (")
-    const content = options.shift()
+    const title = options.shift()
+    const emojis = []
 
     for (let o = 0; o < options.length; o++) {
         options[o] = options[o].split(" ").filter(val => val.length).slice(0, 2)
         
         let emoji;
-        if (options[o][1]) emoji = options[o][0].match(/[\p{Emoji}\u200d]+/gu) ? options[o][0].match(/[\p{Emoji}\u200d]+/gu)[0] : client.emojis.get(options[o][0].replace("<((@!?\d+)|(:.+?:\d+))>", ""))[0]
-        
+        if (options[o][1]) emoji = await utils.getEmojiData(options[o][0]) ? await utils.getEmojiData(options[o][0]) : options[o][0].match(/[\p{Emoji}\u200d]+/gu)[0]
         let role = message.guild.roles.cache.get((options[o][1] ? options[o][1] : options[o][0]).replace("<@&", "").replace(">", ""))
         
         let perfect = role && owner.id == message.author.id ? true : message.member.roles.highest.position >= role.position
@@ -46,12 +46,16 @@ async function execute(toolbox) {
         if (!role || role == null) {
             options[o] = null
         } else {
-            options[o] = {
-                type: "BUTTON",
+            if (emoji) emojis.push({
                 label: role.name,
-                customId: "br:"+role.id,
-                emoji: emoji ? emoji : null,
-                style: "SECONDARY"
+                emoji: emoji.id || emoji,
+                custom: emoji.id ? true : false
+            })
+            options[o] = { 
+                type: "BUTTON", 
+                label: role.name,
+                customId: "br:"+role.id, 
+                style: "PRIMARY"
             }
         }
     }
@@ -60,8 +64,9 @@ async function execute(toolbox) {
     if (options.length < 1 || options.length > 10) message.reply({ content: `1-10 Roles are needed` });
 
     const embed = new MessageEmbed()
-            .setDescription(content)
-            .setColor(utils.colors.gold)
+            .setTitle(title)
+            .setDescription(options.map(o => `${emojis.find(e => e.label == o.label) ? (!emojis.find(e => e.label == o.label).custom ? emojis.find(e => e.label == o.label).emoji : `<:emoji:${emojis.find(e => e.label == o.label).emoji}>`) : "<:emoji:801947188590411786>"}<:dot:871478724439179306><@&${o.customId.slice(3)}>`).join("\n"))
+            .setColor("#2f3136")
 
     const row = new MessageActionRow()
         .addComponents(options);
