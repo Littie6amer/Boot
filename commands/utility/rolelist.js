@@ -8,6 +8,7 @@ const command = module.exports = new Command()
 command.create(["selectionroles", "sr", "selects", "rolelist", "rl"])
     .setExecute(execute)
     .addDropOption("roleList", [""], roleExecute, false)
+    .setRestriction("DEV")
 
 async function execute(toolbox) {
     const { message, client, args } = toolbox

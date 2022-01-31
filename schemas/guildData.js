@@ -3,44 +3,66 @@ const mongoose = require('mongoose');
 const guildDataSc = new mongoose.Schema({
   guildId: String,
   leveling: {
-    "enabled": {
+    enabled: {
       type: Boolean,
       default: true,
     },
-    "message": {
-      "enabled": {
+    message: {
+      enabled: {
         type: Boolean,
         default: true,
       },
-      "channel": {
+      channel: {
         type: String,
         default: "ANY",
       },
-      "content": {
+      content: {
         type: String,
         default: "**Level up!** {empty} `Level {level.last.number} -> Level {level.new.number}` :sparkles:",
       },
-      "embed": {
+      embed: {
         type: Boolean,
         default: true,
       },
     },
-    "xp": {
-      "rate": {
+    xp: {
+      rate: {
         type: Array,
         default: [2, 5],
       },
-      "timeout": {
+      timeout: {
         type: Number,
         default: 30000,
       },
     }
   },
   activity: {
-    "enabled": {
+    enabled: {
       type: Boolean,
       default: true,
     },
+  },
+  suggestions: {
+    channelId: {
+      type: String,
+      default: null,
+    },
+    submitType: {
+      type: String,
+      default: "COMMAND" // COMMAND, CHANNEL
+    },
+    feedbackType: {
+      type: String,
+      default: "VOTE", // VOTE, THREAD
+    },
+    moderators: {
+      type: Array,
+      default: [],
+    },
+    blacklisted: {
+      type: Array,
+      default: [],
+    }
   }
 })
 

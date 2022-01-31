@@ -1,63 +1,62 @@
-const { MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu } = require('discord.js')
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
 const guildDataSc = require('../../schemas/guildData')
-const guildProfileSc = require('../../schemas/guildProfile')
 const utils = require('../../utils')
 const { Command } = require('../../utils')
 const ms = require('ms')
 
 const command = module.exports = new Command()
 
-command.create(['leveling', 'leveling-settings', 'ls'])
+command.create(['suggestion', 'suggestion-settings', 'ss'])
     .setExecute(execute)
-    .addButton("leveling:general", execute, false)
-    .addDropOption("leveling:select", [""], toolbox => {
-        const { interaction } = toolbox
-        if (interaction.values[0] == "general") execute(toolbox)
-        if (interaction.values[0] == "rewards") rewardsExecute(toolbox)
-        if (interaction.values[0] == "commands") commandsExecute(toolbox)
-    }, false)
-    .addButton("leveling:reset", resetExecute, false)
+    .setRestriction("DEV")
 
 async function execute(toolbox) {
     const { message, client, guildData, args, interaction, userGuildProfile } = toolbox
-    const values = interaction?.customId?.slice(interaction?.customId?.startsWith("leveling:select") ? "leveling:select".length : "leveling:general".length).split('/#~~#/')
-    const configEmbed = utils.leveling.configEmbed
+    const values = interaction?.customId.slice("leveling:refresh".length).split('/#~~#/') || []
+    let { _id, __v, ...guildData_ } = guildData.toObject()
+    const configEmbed = utils.suggestion.configEmbed
     const schema = guildDataSc.schema.obj.leveling
 
-    if (values?.length && values[0] != interaction.member.id) return
+    if (values.length && values[0] != interaction.member.id) return
     if ((utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) return message.channel.send("Please use <@876399663002042380> instead!")
 
     let embed = new MessageEmbed()
         .setColor("#529b3a")
 
+    let components = []
     if (!interaction && !message.member.permissions.has('MANAGE_GUILD') && !userGuildProfile.bypass || interaction && !interaction.member.permissions.has('MANAGE_GUILD')) {
         embed.setAuthor({ name: "Leveling - " + message.guild.name, iconURL: message.guild.iconURL() })
             .setDescription('<a:redcross:868671069786099752> You do not have permission to manage this server!')
             .setColor('RED')
         return message.reply({ embeds: [embed] })
     }
-    let components = [
+    embed.addField('🎄 Leveling module', `${guildData.leveling.enabled} `, true)
+        .addField('🎄 Xp rate', `${guildData.leveling.xp.rate[0]} - ${guildData.leveling.xp.rate[1]} xp`, true)
+        .addField('timeout', `${ms(guildData.leveling.xp.timeout, { long: true })}`, true)
+        .addField('🎄 Level up message', `${guildData.leveling.message.enabled}`, true)
+        .addField('embed', `${guildData.leveling.message.embed}`, true)
+        .addField('channel', `${guildData.leveling.message.channel == "ANY" ? "anywhere" : guildData.leveling.message.channel}`, true)
+        .addField('🎄 Level up message content', `\`\`\` ${guildData.leveling.message.content} \`\`\``)
+
+    components = [
         new MessageActionRow().addComponents([
+            // new MessageButton()
+            //     .setCustomId("leveling:rewards" + (interaction?.member.id || message.member.id))
+            //     .setLabel('Rewards')
+            //     .setEmoji("🎄")
+            //     .setStyle("SECONDARY"),
             new MessageButton()
-                .setCustomId("null1")
-                .setLabel('General Settings Selected')
-                .setStyle("PRIMARY")
-                .setDisabled(true),
-            new MessageButton()
-                .setCustomId("help:leveling" + (interaction?.member.id || message.member.id))
-                .setLabel('Module Page')
+                .setCustomId("leveling:commands" + (interaction?.member.id || message.member.id))
+                .setLabel('Commands')
                 .setStyle("SECONDARY"),
             new MessageButton()
                 .setURL('https://boot.tethys.club')
-                .setLabel('Documentation')
+                .setLabel('Bot Manual')
                 .setStyle("LINK"),
-        ]),
-        new MessageActionRow().addComponents([
-            new MessageSelectMenu().setCustomId("leveling:select" + (interaction?.member.id || message.member.id)).addOptions([
-                { label: "General", value: "general" },
-                { label: "Rewards", value: "rewards" },
-                { label: "Commands", value: "commands" },
-            ])
+            new MessageButton()
+                .setCustomId('leveling:refresh' + (interaction?.member.id || message.member.id))
+                .setLabel('Refresh')
+                .setStyle('DANGER')
         ]),
     ]
     switch (args ? args[0]?.toLowerCase() : undefined) {
@@ -219,19 +218,19 @@ async function execute(toolbox) {
                     message.reply({
                         content: "Are you sure?", components: [
                             new MessageActionRow().addComponents(
-                                new MessageButton().setCustomId("leveling:resetall/#~~#/" + (interaction?.member.id || message.member.id)).setLabel('Reset Leveling Data for Everyone').setStyle("DANGER").setEmoji("💥")
+                                new MessageButton().setCustomId("suggestion:resetall/#~~#/" + (interaction?.member.id || message.member.id)).setLabel('Reset Leveling Data for Everyone').setStyle("DANGER").setEmoji("💥")
                             )
                         ]
                     })
                     break
                 }
                 let user;
-                try { user = await client.users.fetch(args[2].replace("<@", "").replace("!", "").replace(">", "")) } catch { }
+                try { user = await client.users.fetch(args[2].replace("<@", "").replace("!", "").replace(">", "")) } catch {}
                 if (user) {
                     message.reply({
                         content: "Are you sure?", components: [
                             new MessageActionRow().addComponents(
-                                new MessageButton().setCustomId(`leveling:reset${user.id}/#~~#/${(interaction?.member.id || message.member.id)}`).setLabel(`Reset Leveling Data for ${user.username}`).setStyle("DANGER").setEmoji("💥")
+                                new MessageButton().setCustomId(`suggestion:reset${user.id}/#~~#/${(interaction?.member.id || message.member.id)}`).setLabel(`Reset Leveling Data for ${user.username}`).setStyle("DANGER").setEmoji("💥")
                             )
                         ]
                     })
@@ -241,117 +240,4 @@ async function execute(toolbox) {
             }
             break
     }
-}
-
-function rewardsExecute(toolbox) {
-    const { message, interaction } = toolbox
-    const values = interaction?.customId.slice("leveling:select".length).split('/#~~#/') || []
-
-    if (values.length && values[0] != interaction.member.id) return
-
-    const embed = new MessageEmbed()
-        .setDescription(':gift: **Coming soon!**')
-        .setColor("WHITE")
-
-        let components = [
-            new MessageActionRow().addComponents([
-                new MessageButton()
-                    .setCustomId("null1")
-                    .setLabel('Reward Page Selected')
-                    .setStyle("PRIMARY")
-                    .setDisabled(true),
-                new MessageButton()
-                    .setCustomId("help:leveling" + (interaction?.member.id || message.member.id))
-                    .setLabel('Module Page')
-                    .setStyle("SECONDARY"),
-                new MessageButton()
-                    .setURL('https://boot.tethys.club')
-                    .setLabel('Documentation')
-                    .setStyle("LINK"),
-            ]),
-            new MessageActionRow().addComponents([
-                new MessageSelectMenu().setCustomId("leveling:select" + interaction.member.id).addOptions([
-                    { label: "General", value: "general" },
-                    { label: "Rewards", value: "rewards" },
-                    { label: "Commands", value: "commands" },
-                ])
-            ]),
-        ]
-
-    interaction.deferUpdate()
-    message.edit({ embeds: [embed], components })
-}
-
-async function resetExecute(toolbox) {
-    const { interaction } = toolbox
-    const values = interaction.customId.slice("leveling:reset".length).split('/#~~#/')
-
-    if (interaction.member.id != values[1]) return
-    if (!interaction.message.guild.members.cache.get(values[1])?.permissions.has("MANAGE_GUILD")) return
-
-    if (values[0] == "all") {
-        guildProfileSc.updateMany({ guildId: interaction.message.guild.id }, { leveling: {} }).catch(e => {
-            interaction.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/adYXN5pa8X").setStyle("LINK"))] })
-            console.log(`[Boot Manager Error]: Error resetting data`)
-            console.log(`~~~`)
-            return console.error(e);
-        })
-
-        interaction.message.edit({ embeds: [], components: [], content: `<@${interaction.member.id}> reset everyone's levels` })
-    } else {
-        const data = await guildProfileSc.findOne({ guildId: interaction.message.guild.id, userId: values[0] })
-        if (data) {
-            data.leveling = undefined; data.save().catch(e => {
-                interaction.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/adYXN5pa8X").setStyle("LINK"))] })
-                console.log(`[Boot Manager Error]: Error resetting data`)
-                console.log(`~~~`)
-                return console.error(e);
-            })
-        }
-
-        interaction.message.edit({ embeds: [], components: [], content: `<@${interaction.member.id}> reset <@${values[0]}>'s levels` })
-    }
-}
-
-function commandsExecute(toolbox) {
-    const { interaction, message, client } = toolbox
-    const values = interaction.customId.slice("leveling:select".length).split('/#~~#/')
-    if (values[0] != interaction.member.id) return
-
-    const embed = new MessageEmbed()
-        .setAuthor({ name: "Leveling Module Commands", iconURL: interaction.guild.iconURL() })
-        .addField('View your level', `\`!!level\``)
-        .addField('Module', `\`!!leveling [enable | disable]\`\n\`!!leveling data reset\`\n\`!!leveling data reset [@user | User ID]\``)
-        .addField('Xp', `\`!!leveling xp rate [minimum] [maximum]\`\n\`!!leveling xp timeout [time length]\``)
-        .addField('Levelup Messages', `\`!!leveling messages [enable | disable]\`\n\`!!leveling message content [message]\`\n\`!!leveling message embed [enable | disable]\`\n\`!!leveling message channel [#channel]\`\n[Leveling message variables](https://boot.tethys.club/vars/level-up-messages)`)
-        .setFooter({ text: "Leveling Module", iconURL: "https://cdn4.iconfinder.com/data/icons/ui-actions/21/gear_cog-256.png" })
-        .setColor("2f3136")
-
-    let components = [
-        new MessageActionRow().addComponents([
-            new MessageButton()
-                .setCustomId("null1")
-                .setLabel('Command Page Selected')
-                .setStyle("PRIMARY")
-                .setDisabled(true),
-            new MessageButton()
-                .setCustomId("help:leveling" + (interaction?.member.id || message.member.id))
-                .setLabel('Module Page')
-                .setStyle("SECONDARY"),
-            new MessageButton()
-                .setURL('https://boot.tethys.club')
-                .setLabel('Documentation')
-                .setStyle("LINK"),
-        ]),
-        new MessageActionRow().addComponents([
-            new MessageSelectMenu().setCustomId("leveling:select" + interaction.member.id).addOptions([
-                { label: "General", value: "general" },
-                { label: "Rewards", value: "rewards" },
-                { label: "Commands", value: "commands" },
-            ])
-        ]),
-    ]
-
-    interaction.deferUpdate()
-    interaction.message.edit({ embeds: [embed], components })
 }
