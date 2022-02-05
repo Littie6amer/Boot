@@ -9,7 +9,7 @@ command
     .setExecute(execute)
 
 async function execute(toolbox) {
-    const { userGuildProfile } = toolbox
+    const { userGuildProfile, message } = toolbox
     userGuildProfile.bypass = userGuildProfile.bypass ? false : true
     userGuildProfile.save()
     if (message.reactable) toolbox.message.react(userGuildProfile.bypass ? "<:enable:868669549371871322>" : "<:disabled:868669549376045088>")
