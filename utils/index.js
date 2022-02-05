@@ -62,7 +62,7 @@ function configEmbed(guildData, message) {
     }
     const embed = new MessageEmbed()
         .setAuthor(message.guild.name, message.guild.iconURL())
-        .setColor("BLURPLE")
+        .setColor("2f3136")
         .setFooter("Activity Module Settings", "https://cdn4.iconfinder.com/data/icons/ui-actions/21/gear_cog-256.png")
         .addField('Activity', `\`\`\`This is: ${data.enabled}\`\`\``)
 
@@ -71,5 +71,7 @@ function configEmbed(guildData, message) {
 
 utils.activity = {}
 utils.activity.configEmbed = configEmbed
+
+utils.getEmojiData = (require("./emojis")).getEmojiData
 
 module.exports = utils

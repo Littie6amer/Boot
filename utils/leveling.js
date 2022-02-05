@@ -26,7 +26,7 @@ function getRandomXp(between) {
 leveling.getRandomXp = getRandomXp
 
 function parseXp(xp) {
-    let xpAmounts = [50, 100, 150, 200, 300, 400, 500, 750, 1000]
+    let xpAmounts = [50, 100, 150, 200, 300, 400, 500, 750, 1000, 2000, 3000, 4000, 5000, 7500, 10000]
     let level = 0;
     while (xp > xpAmounts[0]) {
         level++; xp -= xpAmounts[0]
@@ -131,15 +131,15 @@ function configEmbed (guildData, message, show) {
         content: guildData.leveling.message.content
     }
     const embed = new MessageEmbed()
-    .setAuthor(message.guild.name, message.guild.iconURL())
-    .setColor("BLURPLE")
-    .setFooter("Leveling Module Settings", "https://cdn4.iconfinder.com/data/icons/ui-actions/21/gear_cog-256.png")
+    .setAuthor({ name: message.guild.name + (message.guild.name.endsWith("s") ? "'" : "'s") + " Settings", iconURL: message.guild.iconURL() })
+    .setColor("2f3136")
+    .setFooter({ text: "Leveling Module", iconURL: "https://cdn4.iconfinder.com/data/icons/ui-actions/21/gear_cog-256.png" })
     if (show.includes("xp")) {
         embed.addField('Xp Settings', `\`\`\`This is: ${data.enabled} \nFloor Rate: ${data.floorRate}\nCeiling Rate: ${data.ceilingRate}\nTimeout: ${data.timeout}\`\`\``)
     }
     if (show.includes("message")) {
         embed.addField('Level Up Message Settings', `\`\`\`This is: ${data.messageEnabled} \nEmbed: ${data.embed}\nChannel: ${data.channel}\`\`\``)
-        .addField('Level Up Message Content', `\`\`\`${data.content}\`\`\`\n[Leveling message variables](https://boot.tethys.club/)`)
+        .addField('Level Up Message Content', `\`\`\`${data.content}\`\`\`\n[Leveling message variables](https://boot.tethys.club/vars/level-up-messages)`)
     }
     return embed
 }

@@ -5,10 +5,16 @@ const { MessageButton, MessageActionRow, MessageSelectMenu, MessageEmbed, versio
 command
     .create(["help", "intro", "i", "h", "info", "stats", "botinfo"])
     .setExecute(execute)
-    .addDropOption("help:select", ["helpP1", "helpP2", "helpP3", "helpP4"], dropDownExecute, false)
-    .addButton("help:commands", commandsExecute, false)
-    .addButton("help:info", infoExecute, false)
-    .addButton("help:back", execute, false)
+    .addButton("help:home", execute, false)
+    .addDropOption("help:select", [""], toolbox => {
+        const {interaction} = toolbox
+        if (interaction.values[0] == "home") execute(toolbox)
+        if (interaction.values[0] == "leveling") levelingPage(toolbox)
+        if (interaction.values[0] == "activity") activityPage(toolbox)
+        if (interaction.values[0] == "other") otherPage(toolbox)
+    }, false)
+    .addButton("help:leveling", levelingPage, false)
+    .addButton("help:activity", activityPage, false)
     .makeSlashCommand()
 
 module.exports = command
@@ -18,79 +24,64 @@ function execute(toolbox) {
     const input = interaction || message
 
     let embed = new MessageEmbed()
-        .setAuthor(`${client.user.username} @ ${utils.branch}`, client.user.avatarURL(), "https://github.com/Littie6amer/Litties-Boot")
-        .setTitle("Happy Holidays To You!")
-        .setDescription(`Keep enjoying the holidays and keep an active discord server! Give people reasons to chat in your server with my leveling module! *Click the button below this message to configure*`)
-        .addField('Is that member even active here??', `Litties Boot allows you to view where a member has sent messages and how many. *Click the button below this message to configure*`)
-        .addField('I want my members to have roles!', `Litties Boot allows you to create messages that allow members to assign roles to themselves.  *Click the button below this message to view the commands*`)
-        .setFooter(`${client.user.username} @ ${utils.branch}`)
-        .setColor("#529b3a")
+        .setAuthor({ name: `${client.user.username} @ ${utils.branch}`, iconURL: client.user.avatarURL(), url: "https://github.com/Littie6amer/Litties-Boot" })
+        .setTitle("Snow is falling!")
+        .setDescription(`Litties Boot allow you to manage your discord server while you're shoveling the snow off you're driveway!`)
+        .addField('What can litties boot do?', `<:blue_dot:929844359812231208> [Leveling](https://boot.tethys.club/modules/leveling)\n<:blue_dot:929844359812231208> [Activity Tracking](https://boot.tethys.club/modules/activity)\n<:blue_dot:929844359812231208> [Other Utilities](https://boot.tethys.club/modules/other-utilities)`)
+        .setColor("2f3136")
 
     let components = [
         new MessageActionRow().addComponents([
             new MessageButton()
-                .setCustomId("leveling:refresh" + input.member.id)
-                .setLabel('Leveling Module')
-                .setEmoji("🎄")
-                .setStyle("SECONDARY"),
+                .setCustomId("null1" + input.member.id)
+                .setLabel('Home Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
             new MessageButton()
-                .setCustomId("activity:refresh" + input.member.id)
-                .setLabel('Activity Module')
-                .setStyle("SECONDARY"),
+                .setCustomId("null2" + input.member.id)
+                .setLabel(`${client.guilds.cache.size} Servers`)
+                .setStyle("SECONDARY")
+                .setDisabled(true),
             new MessageButton()
-                .setCustomId("help:commands" + input.member.id)
-                .setLabel('Commands')
-                .setStyle("PRIMARY"),
-        ]),
-        new MessageActionRow().addComponents([
+                .setCustomId("null3" + input.member.id)
+                .setLabel(`${client.membercount} Users`)
+                .setStyle("SECONDARY")
+                .setDisabled(true),
             new MessageButton()
                 .setURL("https://boot.tethys.club")
-                .setLabel('Every Feature')
-                .setEmoji("🎄")
-                .setStyle("LINK"),
-            new MessageButton()
-                .setCustomId("help:info" + input.member.id)
-                .setLabel('About Litties Boot')
-                .setStyle("PRIMARY"),
-        ])
+                .setLabel('Documentation')
+                .setStyle("LINK")
+        ]),
+        new MessageActionRow().addComponents([
+            new MessageSelectMenu().setCustomId("help:select"  + input.member.id).addOptions([
+                { label: "Home", value: "home" },
+                { label: "Leveling", value: "leveling" },
+                { label: "Activity", value: "activity" },
+                { label: "Other Utilities", value: "other" },
+            ])
+        ]),
     ]
 
     if (args && args[0] && args[0].length) {
         const command = client.commands.find(c => c.names.includes(args[0].toLowerCase()))
 
-        components = [
-            new MessageActionRow().addComponents([
-                new MessageButton()
-                    .setCustomId("help:back" + message.author.id)
-                    .setLabel('Back')
-                    .setStyle("DANGER")
-            ])
-        ]
         if (command) {
+            components[0].components[0].setStyle("SECONDARY")
+            components[0].components[0].setLabel(`${command.names[0]} command`)
             embed = new MessageEmbed()
-                .setAuthor(`${client.user.username} > ${command.names[0]}`)
+                .setAuthor({ name: `${command.names[0]} command` })
                 .setDescription(command.description)
                 .addField('Names', `\`${command.names.join('\`, \`')}\``)
                 .addField('Is slash command?', `${command.slashExecute ? true : false}`)
-                .setColor(utils.colors.christmasGreen)
+                .setColor("2f3136")
 
         } else {
-            embed = new MessageEmbed()
-                .setAuthor(`${client.user.username} > Everything`)
-                .setThumbnail(client.user.avatarURL())
-                .setDescription('Every command that can be used.')
-                .addField('Role Selectors', `<:smallboot:901130192007864350> buttonrole\n<:smallboot:901130192007864350> rolelist`, true)
-                .addField('Discord Bot Management', `<:smallboot:901130192007864350> botlist\n<:smallboot:901130192007864350> invite`, true)
-                .addField('Leveling', `<:smallboot:901130192007864350> level\n<:smallboot:901130192007864350> leveling-settings`, true)
-                .addField('General Rewards', `<:smallboot:901130192007864350> rewards\n<:smallboot:901130192007864350> reward-settings`, true)
-                .addField('Activity Tracking', `<:smallboot:901130192007864350> activity\n<:smallboot:901130192007864350> activity-settings`, true)
-                .setColor(utils.colors.christmasGreen)
-
+            components[0].components[0].setLabel(`Could not find command!`).setStyle("DANGER")
         }
     }
 
-    if (interaction?.isButton()) {
-        const values = interaction.customId.slice("help:back".length).split('/#~~#/')
+    if (interaction?.isSelectMenu()) {
+        const values = interaction.customId.slice("help:select".length).split('/#~~#/')
         if (values[0] != interaction.member.id) return
 
         interaction.deferUpdate()
@@ -100,154 +91,123 @@ function execute(toolbox) {
     }
 }
 
-function dropDownExecute(toolbox) {
-    const { interaction, client } = toolbox
-    const values = interaction.customId.slice("help:select".length).split('/#~~#/')
-    const embed = new MessageEmbed()
-
-    if (interaction.values[0] == "helpP1") {
-        embed
-            .setThumbnail(client.user.avatarURL())
-            .setAuthor(`${client.user.username} > Utility`)
-            .setDescription('The useful commands that you can use!')
-            .addField('Role Selectors', `<:smallboot:901130192007864350> buttonrole\n<:smallboot:901130192007864350> rolelist`)
-            .addField('Discord Bot Management', `<:smallboot:901130192007864350> botlist\n<:smallboot:901130192007864350> invite`)
-            .setColor(utils.colors.christmasGreen)
-    }
-
-    if (interaction.values[0] == "helpP2") {
-        embed
-            .setAuthor(`${client.user.username} > Moderation`)
-            .setThumbnail(client.user.avatarURL())
-            .setDescription('The useful commands that you can use!')
-            .addField('General Moderation', `<:smallboot:901130192007864350> warn\n<:smallboot:901130192007864350> mute\n<:smallboot:901130192007864350> unmute\n<:smallboot:901130192007864350> kick\n<:smallboot:901130192007864350> ban\n<:smallboot:901130192007864350> unban`)
-            .setColor(utils.colors.christmasGreen)
-    }
-
-    if (interaction.values[0] == "helpP3") {
-        embed
-            .setAuthor(`${client.user.username} > Leveling`)
-            .setThumbnail(client.user.avatarURL())
-            .setDescription('The leveling commands you can use!')
-            .addField('Leveling', `<:smallboot:901130192007864350> level\n<:smallboot:901130192007864350> leveling-settings`)
-            .addField('General Rewards', `<:smallboot:901130192007864350> rewards\n<:smallboot:901130192007864350> reward-settings`)
-            .addField('Activity Tracking', `<:smallboot:901130192007864350> activity\n<:smallboot:901130192007864350> activity-settings`)
-            .setColor(utils.colors.christmasGreen)
-    }
-
-    if (interaction.values[0] == "helpP4") {
-        embed
-            .setAuthor(`${client.user.username} > Other`)
-            .setThumbnail(client.user.avatarURL())
-            .setDescription('The other commands you can use!')
-            .addField('Testing', `<:smallboot:901130192007864350> trigger`)
-            .setColor(utils.colors.christmasGreen)
-    }
-
+function levelingPage(toolbox) {
+    const { interaction, message, client } = toolbox
+    const values = interaction.customId.slice(interaction.customId.startsWith("help:select") ? "help:select".length : "help:leveling".length).split('/#~~#/')
     if (values[0] != interaction.member.id) return
 
-    const components = [
+    const embed = new MessageEmbed()
+        .setAuthor({ name: "Leveling Module", iconURL: client.user.avatarURL() })
+        .setDescription("Allow members to gain xp by sending messages and level up by gaining enough xp to do so!")
+        .addField("Commands", `\`${utils.prefixes[0]}level\`\n\`${utils.prefixes[0]}leveling-settings\``)
+        .setColor("2f3136")
+
+    let components = [
         new MessageActionRow().addComponents([
             new MessageButton()
-                .setCustomId("help:back" + values[0])
-                .setLabel('Back')
-                .setStyle("DANGER")
-        ])
+                .setCustomId("null1" + interaction.member.id)
+                .setLabel('Leveling Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
+            new MessageButton()
+                .setCustomId("leveling:general" + interaction.member.id)
+                .setLabel(`View Module`)
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setURL("https://boot.tethys.club")
+                .setLabel('Documentation')
+                .setStyle("LINK")
+        ]),
+        new MessageActionRow().addComponents([
+            new MessageSelectMenu().setCustomId("help:select"  + interaction.member.id).addOptions([
+                { label: "Home", value: "home" },
+                { label: "Leveling", value: "leveling" },
+                { label: "Activity", value: "activity" },
+                { label: "Other Utilities", value: "other" },
+            ])
+        ]),
     ]
 
     interaction.deferUpdate()
-    return interaction.message.edit({ embeds: [embed], components })
-
+    interaction.message.edit({ embeds: [embed], components })
 }
 
-function showallExecute(toolbox) {
-    const { interaction, client } = toolbox
-    const values = interaction.customId.slice("help:showAll".length).split('/#~~#/')
-    const embed = new MessageEmbed()
-        .setAuthor(`${client.user.username} > Everything`)
-        .setThumbnail(client.user.avatarURL())
-        .setDescription(`Every command that can be used. \`${utils.prefixes[0]}help [Command Name]\``)
-        .addField('Role Selectors', `<:smallboot:901130192007864350> buttonrole\n<:smallboot:901130192007864350> rolelist`, true)
-        .addField('Discord Bot Management', `<:smallboot:901130192007864350> botlist\n<:smallboot:901130192007864350> invite`, true)
-        .addField('Leveling', `<:smallboot:901130192007864350> level\n<:smallboot:901130192007864350> leveling-settings`, true)
-        .addField('General Rewards', `<:smallboot:901130192007864350> rewards\n<:smallboot:901130192007864350> reward-settings`, true)
-        .addField('Activity Tracking', `<:smallboot:901130192007864350> activity\n<:smallboot:901130192007864350> activity-settings`, true)
-        .setColor(utils.colors.christmasGreen)
-
-    const components = [
-        new MessageActionRow().addComponents([
-            new MessageButton()
-                .setCustomId("help:back" + values[0])
-                .setLabel('Back')
-                .setStyle("DANGER")
-        ])
-    ]
-
+function activityPage(toolbox) {
+    const { interaction, message, client } = toolbox
+    const values = interaction.customId.slice(interaction.customId.startsWith("help:select") ? "help:select".length : "help:activity".length).split('/#~~#/')
     if (values[0] != interaction.member.id) return
 
+    const embed = new MessageEmbed()
+        .setAuthor({ name: "Activity tracking Module", iconURL: client.user.avatarURL() })
+        .setDescription("Track how active someone has been in a channel!")
+        .addField("Commands", `\`${utils.prefixes[0]}messages\`\n\`${utils.prefixes[0]}activity-settings\``)
+        .setColor("2f3136")
+
+    let components = [
+        new MessageActionRow().addComponents([
+            new MessageButton()
+                .setCustomId("null1" + interaction.member.id)
+                .setLabel('Activity Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
+            new MessageButton()
+                .setCustomId("activity:general" + interaction.member.id)
+                .setLabel(`View Module`)
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setURL("https://boot.tethys.club")
+                .setLabel('Documentation')
+                .setStyle("LINK")
+        ]),
+        new MessageActionRow().addComponents([
+            new MessageSelectMenu().setCustomId("help:select"  + interaction.member.id).addOptions([
+                { label: "Home", value: "home" },
+                { label: "Leveling", value: "leveling" },
+                { label: "Activity", value: "activity" },
+                { label: "Other Utilities", value: "other" },
+            ])
+        ]),
+    ]
+
     interaction.deferUpdate()
-    return interaction.message.edit({ embeds: [embed], components })
+    interaction.message.edit({ embeds: [embed], components })
 }
 
-function commandsExecute(toolbox) {
-    const { interaction, client } = toolbox
-    const values = interaction.customId.slice("help:commands".length).split('/#~~#/')
-    const embed = new MessageEmbed()
-        .setAuthor(`${client.user.username}`)
-        .setThumbnail(client.user.avatarURL())
-        .setDescription('Important Commands')
-        .addField('Role Selectors', `\`${utils.prefixes[0]}buttonrole\`\n\`${utils.prefixes[0]}rolelist\``,)
-        .addField('Discord Bot Management', `\`${utils.prefixes[0]}botlist\`\n\`${utils.prefixes[0]}invite\``)
-        .addField('Leveling', `\`${utils.prefixes[0]}rank\`\n\`${utils.prefixes[0]}leveling\``)
-        .addField('Activity', `\`${utils.prefixes[0]}messages\`\n\`${utils.prefixes[0]}activity\``)
-        .setColor(utils.colors.christmasGreen)
-
-    const components = [
-        new MessageActionRow().addComponents([
-            new MessageButton()
-                .setCustomId("help:back" + values[0])
-                .setLabel('Back')
-                .setStyle("DANGER")
-        ])
-    ]
-
+function otherPage(toolbox) {
+    const { interaction, message, client } = toolbox
+    const values = interaction.customId.slice(interaction.customId.startsWith("help:select") ? "help:select".length : "help:activity".length).split('/#~~#/')
     if (values[0] != interaction.member.id) return
 
-    interaction.deferUpdate()
-    return interaction.message.edit({ embeds: [embed], components })
-}
-
-function infoExecute(toolbox) {
-    const { interaction, client } = toolbox
-    const values = interaction.customId.slice("help:info".length).split('/#~~#/')
     const embed = new MessageEmbed()
-        .setAuthor(`About ${client.user.username}`, client.user.avatarURL(), "https://github.com/Littie6amer/Litties-Boot")
-        .setTitle("Its freezing over here!")
-        .setDescription(`Litties Boot is a bot created by [Littie6amer](https://discord.com/users/402888568579686401) to be the only bot you'll need. Litties boot is created to be modern, fun and useful! You can always suggest your feature ideas using \`${utils.prefixes[0]}suggest\` or make a pull request on the GitHub Repo.`)
-        .addField('Bot stats', `<:smallboot:901130192007864350> ${client.guilds.cache.size} servers\n<:smallboot:901130192007864350> ${client.membercount} members\n<:smallboot:901130192007864350> Running thanks to [Node.js](https://nodejs.org) and [Discord.js](https://discord.js.org)`)
-        .addField('Github Repo', `Can be found [here](https://github.com/Littie6amer/Litties-Boot)`)
-        .addField("Bots", `[Litties Boot](https://discord.com/api/oauth2/authorize?client_id=789211373020250172&permissions=8&scope=bot%20applications.commands)  - Release Branch\n[Litties Boot Red](https://discord.com/api/oauth2/authorize?client_id=876399663002042380&permissions=8&scope=bot%20applications.commands) - Recent Branch\n[Litties Boot Blue]() - Experiment Branch (Coming soon)`)
-        .setFooter(`${client.user.username} @ ${utils.branch}`)
-        .setColor("#529b3a")
+        .setAuthor({ name: "Other Utilities", iconURL: client.user.avatarURL() })
+        .setDescription("Litties Boot utility commands")
+        .addField("Role Management", `\`${utils.prefixes[0]}buttonrole\``)
+        .addField("Emoji Management", `\`${utils.prefixes[0]}emoji info\`\n\`${utils.prefixes[0]}emoji palette\`\n\`${utils.prefixes[0]}emoji delete\`\n\`${utils.prefixes[0]}emoji create\``)
+        .addField("Bot Management", `\`${utils.prefixes[0]}invite\`\n\`${utils.prefixes[0]}botlists\``)
+        .setColor("2f3136")
 
-
-    const components = [
+    let components = [
         new MessageActionRow().addComponents([
             new MessageButton()
-                .setCustomId("help:back" + values[0])
-                .setLabel('Back')
-                .setStyle("DANGER"),
+                .setCustomId("null1" + interaction.member.id)
+                .setLabel('Utilties Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
             new MessageButton()
-                .setCustomId("help:info" + values[0])
-                .setLabel('Refresh')
-                .setEmoji("🎄")
-                .setStyle("SECONDARY")
-        ])
+                .setURL("https://boot.tethys.club")
+                .setLabel('Documentation')
+                .setStyle("LINK")
+        ]),
+        new MessageActionRow().addComponents([
+            new MessageSelectMenu().setCustomId("help:select"  + interaction.member.id).addOptions([
+                { label: "Home", value: "home" },
+                { label: "Leveling", value: "leveling" },
+                { label: "Activity", value: "activity" },
+                { label: "Other Utilities", value: "other" },
+            ])
+        ]),
     ]
 
-    if (values[0] != interaction.member.id) return
-
     interaction.deferUpdate()
-    return interaction.message.edit({ embeds: [embed], components })
-
+    interaction.message.edit({ embeds: [embed], components })
 }

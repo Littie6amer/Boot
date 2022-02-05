@@ -16,7 +16,7 @@ async function execute(toolbox) {
     const { message, args, client, guildData, interaction } = toolbox
 
     const values = interaction?.customId.slice("rank:".length).split('/#~~#/')
-    if (values && (values[0] != interaction.member.id)) return
+    if (values && (values[1] != interaction.member.id)) return
     
     if (!guildData.leveling.enabled) {
         const embed = new MessageEmbed()
@@ -118,18 +118,15 @@ async function execute(toolbox) {
     roundedClip(context, 20, config.showGuildName ? 50 : 20, 45, 45, 5);
     if (config.showUserAvatar) context.drawImage(avatar, 20, config.showGuildName ? 50 : 20, 45, 45);
 
-    const attachment = new MessageAttachment(canvas.toBuffer(), 'profile-image.png');
+    const attachment = new MessageAttachment(canvas.toBuffer(), `${user.username}.png`);
 
-    let components = [new MessageActionRow().addComponents([
-        new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
-        //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
-    ])]
+    let components = []
 
     if (interaction?.message) {
         interaction.deferUpdate()
         interaction.message.edit({ files: [attachment], components, embeds: [] }).then(m => {
             components = [new MessageActionRow().addComponents([
-                new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
+                new MessageButton().setCustomId('messages:' + user.id + "/#~~#/" + interaction.member.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
                 new MessageButton().setURL(m.attachments.first().url).setStyle('LINK').setLabel("Image Url"),
             ])]
             m.edit({ components })
@@ -137,7 +134,7 @@ async function execute(toolbox) {
     } else {
         message.reply({ files: [attachment], components }).then(m => {
             components = [new MessageActionRow().addComponents([
-                new MessageButton().setCustomId('messages:' + user.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
+                new MessageButton().setCustomId('messages:' + user.id + "/#~~#/" + message.author.id).setEmoji('✉️').setLabel('Activity').setStyle('SECONDARY'),
                 new MessageButton().setURL(m.attachments.first().url).setStyle('LINK').setLabel("Image Url"),
             ])]
             m.edit({ components })

@@ -1,25 +1,37 @@
-const Discord = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 const embeds = {
-  async simpleUsageEmbed (command, usage) {
-    let embed = new Discord.MessageEmbed()
-        .setColor('bf943d')
-        .setAuthor(`${command.names[0]} command`.toUpperCase())
-        .setDescription(command.description)
-        .addField("COMMAND USAGE", `<:smallboot:901130192007864350> \`${require('../data/config.json').prefixes[0]}${command.names[0]}${usage}\``)
-        return embed
+  async simpleUsageEmbed(command, usage) {
+    let embed = new MessageEmbed()
+      .setColor('BLURPLE')
+      .setAuthor({ name: `${command.names[0].slice(0, 1).toUpperCase() + command.names[0].slice(1, command.names[0].length)} command`, iconURL: `` })
+      .setDescription(`${command.description}`)
+      .addField("\u200b", `<:blue_dot:929844359812231208> \`${require(".").prefixes[0]}${command.names[0]}${usage}\``)
+    return embed
   },
-  async subCommandList (command, list) {
-    const lists = []
+  async subCommandList(command, list) {
+    const usage = []
     Object.keys(list).forEach(l => {
-      lists.push({name: l.toUpperCase(), value: `<:smallboot:901130192007864350> \`${command.names[0]} ${list[l].join(`\`\n<:smallboot:901130192007864350> \`${command.names[0]} `)}\``})
+      usage.push({ name: "\u200b", value: `<:blue_dot:929844359812231208> \`${require(".").prefixes[0]}${command.names[0]} ${list[l].join(`\`\n<:blue_dot:929844359812231208> \`${require(".").prefixes[0]}${command.names[0]} `)}\``, inline: true })
     });
-    let embed = new Discord.MessageEmbed()
-        .setColor('bf943d')
-        .setAuthor(`${command.names[0]} command`.toUpperCase())
-        .setDescription(command.description)
-        .addFields(lists)
-        return embed
+    let embed = new MessageEmbed()
+      .setColor('BLURPLE')
+      .setAuthor({ name: `${command.names[0].slice(0, 1).toUpperCase() + command.names[0].slice(1, command.names[0].length)} command`, iconURL: `` })
+      .setDescription(`${command.description}`)
+      .addFields(usage)
+    return embed
+  },
+  success(text) {
+    const embed = new MessageEmbed()
+      .setColor("GREEN")
+      .setDescription(`<a:greencheck:868670956716052510><:Blank1:801947188590411786>${text}`)
+    return embed
+  },
+  error(text) {
+    const embed = new MessageEmbed()
+      .setColor("RED")
+      .setDescription(`<:negative:934545873738797176><:Blank1:801947188590411786>${text}`)
+    return embed
   }
 }
 

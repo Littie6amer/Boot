@@ -1,6 +1,5 @@
 const utils = require('../../utils')
 const Command = utils.Command
-const guildProfileSc = require('../../schemas/guildProfile')
 
 const command = module.exports = new Command()
 
@@ -10,9 +9,9 @@ command
     .setExecute(execute)
 
 async function execute(toolbox) {
-    const { message, userGuildProfile, } = toolbox
-    const { _id, __v, ...userGuildProfile_ } = userGuildProfile.toObject()
-    userGuildProfile_.bypass = userGuildProfile.bypass ? false : true
-    guildProfileSc.updateOne({ userId: message.author.id, guildId: message.guild.id }, userGuildProfile_).then(r => console.log(r))
-    return toolbox.message.reply(`Bypass toggled to ${userGuildProfile_.bypass}`)
+    const { userGuildProfile } = toolbox
+    userGuildProfile.bypass = userGuildProfile.bypass ? false : true
+    userGuildProfile.save()
+    if (message.reactable) toolbox.message.react(userGuildProfile.bypass ? "<:enable:868669549371871322>" : "<:disabled:868669549376045088>")
+    else message.reply(userGuildProfile.bypass ? "<:enable:868669549371871322>" : "<:disabled:868669549376045088>")
 }

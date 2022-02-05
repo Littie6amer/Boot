@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
+const { MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu } = require('discord.js')
 const guildDataSc = require('../../schemas/guildData')
 const guildProfileSc = require('../../schemas/guildProfile')
 const utils = require('../../utils')
@@ -9,27 +9,29 @@ const command = module.exports = new Command()
 
 command.create(['activity', 'activity-settings', 'a'])
     .setExecute(execute)
-    .addButton("activity:refresh", execute, false)
-    .addButton("activity:commands", commandsExecute, false)
-    .addButton("activity:rewards", rewardsExecute, false)
+    .addButton("activity:general", execute, false)
+    .addDropOption("activity:select", [""], toolbox => {
+        const { interaction } = toolbox
+        if (interaction.values[0] == "general") execute(toolbox)
+        if (interaction.values[0] == "commands") commandsExecute(toolbox)
+    }, false)
     .addButton("activity:reset", resetExecute, false)
 
 async function execute(toolbox) {
-    const { message, client, guildData, args, interaction } = toolbox
-    const values = interaction?.customId.slice("activity:refresh".length).split('/#~~#/') || []
+    const { message, client, guildData, args, interaction, userGuildProfile } = toolbox
+    const values = interaction?.customId.slice(interaction?.customId?.startsWith("activity:select") ? "activity:select".length : "activity:general".length).split('/#~~#/') || []
     let { _id, __v, ...guildData_ } = guildData.toObject()
     const configEmbed = utils.activity.configEmbed
-    const schema = guildDataSc.schema.obj.leveling
 
     if (values.length && values[0] != interaction.member.id) return
     if ((utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) return message.channel.send("Please use <@876399663002042380> instead!")
 
     let embed = new MessageEmbed()
-        .setColor("#529b3a")
+        .setColor("2f3136")
 
     let components = []
-    if (!interaction && !message.member.permissions.has('MANAGE_GUILD') || interaction && !interaction.member.permissions.has('MANAGE_GUILD')) {
-        embed.setAuthor("Activity - " + message.guild.name, message.guild.iconURL())
+    if (!interaction && !message.member.permissions.has('MANAGE_GUILD') && !userGuildProfile.bypass || interaction && !interaction.member.permissions.has('MANAGE_GUILD')) {
+        embed.setAuthor({ name: "Activity - " + message.guild.name, url: message.guild.iconURL() })
             .setDescription('<a:redcross:868671069786099752> You do not have permission to manage this server!')
             .setColor('RED')
         return message.reply({ embeds: [embed] })
@@ -37,23 +39,25 @@ async function execute(toolbox) {
 
     components = [
         new MessageActionRow().addComponents([
-            // new MessageButton()
-            //     .setCustomId("activity:rewards" + (interaction?.member.id || message.member.id))
-            //     .setLabel('Rewards')
-            //     .setEmoji("🎄")
-            //     .setStyle("SECONDARY"),
             new MessageButton()
-                .setCustomId("activity:commands" + (interaction?.member.id || message.member.id))
-                .setLabel('Commands')
+                .setCustomId("null1")
+                .setLabel('General Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
+            new MessageButton()
+                .setCustomId("help:activity" + (interaction?.member.id || message.member.id))
+                .setLabel('Module Page')
                 .setStyle("SECONDARY"),
             new MessageButton()
                 .setURL('https://boot.tethys.club')
-                .setLabel('Bot Manual')
+                .setLabel('Documentation')
                 .setStyle("LINK"),
-            new MessageButton()
-                .setCustomId('activity:refresh' + (interaction?.member.id || message.member.id))
-                .setLabel('Refresh')
-                .setStyle('DANGER')
+        ]),
+        new MessageActionRow().addComponents([
+            new MessageSelectMenu().setCustomId("activity:select" + (interaction?.member.id || message.member.id)).addOptions([
+                { label: "General", value: "general" },
+                { label: "Commands", value: "commands" },
+            ])
         ]),
     ]
     switch (args ? args[0]?.toLowerCase() : undefined) {
@@ -92,7 +96,7 @@ async function execute(toolbox) {
                     break
                 }
                 let user;
-                try { user = await client.users.fetch(args[2].replace("<@", "").replace("!", "").replace(">", "")) } catch {}
+                try { user = await client.users.fetch(args[2].replace("<@", "").replace("!", "").replace(">", "")) } catch { }
                 if (user) {
                     message.reply({
                         content: "Are you sure?", components: [
@@ -111,7 +115,7 @@ async function execute(toolbox) {
 
 function commandsExecute(toolbox) {
     const { message, interaction } = toolbox
-    const values = interaction?.customId.slice("activity:commands".length).split('/#~~#/') || []
+    const values = interaction?.customId.slice("activity:select".length).split('/#~~#/') || []
 
     if (values.length && values[0] != interaction.member.id) return
 
@@ -120,41 +124,29 @@ function commandsExecute(toolbox) {
         .addField('View your messages', `\`${utils.prefixes[0]}messages\``)
         .addField('Module', `\`${utils.prefixes[0]}activity [enable | disable]\`\n\`${utils.prefixes[0]}activity data reset\`\n\`${utils.prefixes[0]}activity data reset [@user | User ID]\``)
         .setFooter("Module Commands")
-        .setColor("BLURPLE")
+        .setColor("2f3136")
 
     const components = [
         new MessageActionRow().addComponents([
+            new MessageButton()
+                .setCustomId("null1")
+                .setLabel('Command Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
+            new MessageButton()
+                .setCustomId("help:activity" + (interaction?.member.id || message.member.id))
+                .setLabel('Module Page')
+                .setStyle("SECONDARY"),
             new MessageButton()
                 .setURL('https://boot.tethys.club')
-                .setLabel('Bot Manual')
+                .setLabel('Documentation')
                 .setStyle("LINK"),
-            new MessageButton()
-                .setCustomId('activity:refresh' + (interaction?.member.id || message.member.id))
-                .setLabel('Back')
-                .setStyle('DANGER'),
         ]),
-    ]
-
-    interaction.deferUpdate()
-    message.edit({ embeds: [embed], components })
-}
-
-function rewardsExecute(toolbox) {
-    const { message, interaction } = toolbox
-    const values = interaction?.customId.slice("activity:rewards".length).split('/#~~#/') || []
-
-    if (values.length && values[0] != interaction.member.id) return
-
-    const embed = new MessageEmbed()
-        .setDescription(':gift: **Coming soon!**')
-        .setColor("WHITE")
-
-    const components = [
         new MessageActionRow().addComponents([
-            new MessageButton()
-                .setCustomId('activity:refresh' + (interaction?.member.id || message.member.id))
-                .setLabel('Back')
-                .setStyle('DANGER'),
+            new MessageSelectMenu().setCustomId("activity:select" + (interaction?.member.id || message.member.id)).addOptions([
+                { label: "General", value: "general" },
+                { label: "Commands", value: "commands" },
+            ])
         ]),
     ]
 
@@ -162,7 +154,7 @@ function rewardsExecute(toolbox) {
     message.edit({ embeds: [embed], components })
 }
 
-async function resetExecute (toolbox) {
+async function resetExecute(toolbox) {
     const { interaction } = toolbox
     const values = interaction?.customId.slice("activity:reset".length).split('/#~~#/') || []
 
@@ -180,12 +172,14 @@ async function resetExecute (toolbox) {
         interaction.message.edit({ embeds: [], components: [], content: `<@${interaction.member.id}> reset everyone's levels` })
     } else {
         const data = await guildProfileSc.findOne({ guildId: interaction.message.guild.id, userId: values[0] })
-        if (data) { data.activity = undefined; data.save().catch(e => {
-            interaction.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/adYXN5pa8X").setStyle("LINK"))] })
-            console.log(`[Boot Manager Error]: Error resetting data`)
-            console.log(`~~~`)
-            return console.error(e);
-        }) }
+        if (data) {
+            data.activity = undefined; data.save().catch(e => {
+                interaction.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/adYXN5pa8X").setStyle("LINK"))] })
+                console.log(`[Boot Manager Error]: Error resetting data`)
+                console.log(`~~~`)
+                return console.error(e);
+            })
+        }
 
         interaction.message.edit({ embeds: [], components: [], content: `<@${interaction.member.id}> reset <@${values[0]}>'s levels` })
     }
