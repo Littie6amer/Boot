@@ -1,4 +1,6 @@
+const getImageColors = require('get-image-colors');
 const fetch = require('node-fetch');
+const Color = require("color-to-name")
 
 async function getEmojiData(emoji, client) {
     let data = emoji.replace("<", "").replace(">", "").split(":")
@@ -25,8 +27,25 @@ async function getEmojiData(emoji, client) {
         let responce = await fetch(data.URLs.png)
         if (client && client.emojis.cache.get(data.id)) data.guildId = client.emojis.cache.get(data.id).guild.id
         if (responce.status != 200) return;
+
+        let colors = await getImageColors(data.URLs.png)
+        data.colors = Object.keys(colors).map(c => colorInfo(colors[c]._rgb.slice(0, 3)))
     }
     return data
+}
+
+function colorInfo(rgb) {
+    let hex = []
+    let value = rgb[0] * 65536 + rgb[1] * 256 + rgb[2]
+    for (let value in rgb) {
+        value = rgb[value]
+        value = parseInt(value).toString(16)
+        value = "00".slice(value.length) + value
+        hex.push(value)
+    }
+    hex = hex.slice(0, 3).join("")
+    let name = Color.findClosestColor(`#${hex}`).name
+    return { rgb, hex, name, value }
 }
 
 module.exports = { getEmojiData }

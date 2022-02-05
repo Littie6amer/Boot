@@ -24,7 +24,7 @@ const embeds = {
   success(text) {
     const embed = new MessageEmbed()
       .setColor("GREEN")
-      .setDescription(`<:check_mark:933770478617772123><:Blank1:801947188590411786>${text}`)
+      .setDescription(`<a:greencheck:868670956716052510><:Blank1:801947188590411786>${text}`)
     return embed
   },
   error(text) {
