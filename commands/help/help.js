@@ -182,7 +182,7 @@ function otherPage(toolbox) {
         .setAuthor({ name: "Other Utilities", iconURL: client.user.avatarURL() })
         .setDescription("Litties Boot utility commands")
         .addField("Role Management", `\`${utils.prefixes[0]}buttonrole\``)
-        .addField("Emoji Management", `\`${utils.prefixes[0]}emoji get\`\n\`${utils.prefixes[0]}emoji palette\`\n\`${utils.prefixes[0]}emoji colors\`\n\`${utils.prefixes[0]}emoji delete\`\n\`${utils.prefixes[0]}emoji create\``)
+        .addField("Emoji Management", `\`${utils.prefixes[0]}emoji info\`\n\`${utils.prefixes[0]}emoji palette\`\n\`${utils.prefixes[0]}emoji delete\`\n\`${utils.prefixes[0]}emoji create\``)
         .addField("Bot Management", `\`${utils.prefixes[0]}invite\`\n\`${utils.prefixes[0]}botlists\``)
         .setColor("2f3136")
 
