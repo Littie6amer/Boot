@@ -97,7 +97,7 @@ async function execute(toolbox) {
                     guildData.leveling.message.content = schema.message.content.default
                     embed = configEmbed(guildData, message, ["message"])
                     const messagePreview = await utils.leveling.levelUpMessageVars(schema.message.content.default, toolbox.userGuildProfile, message, 50000)
-                    message.channel.send(guildData.leveling.message.embed ? { embeds: [new MessageEmbed().setColor(utils.colors.gold).setDescription(messagePreview)], parse: ["roles", "everyone"] } : { content: messagePreview, parse: ["roles", "everyone"] })
+                    message.channel.send(guildData.leveling.message.embed ? { embeds: [new MessageEmbed().setColor(utils.colors.gold).setDescription(messagePreview)], allowedMentions: { parse: ["users"] } } : { content: messagePreview, allowedMentions: { parse: ["users"] } })
                     message.reply({ embeds: [embed] })
                     break
                 }
@@ -105,7 +105,7 @@ async function execute(toolbox) {
                 guildData.leveling.message.content = args.slice(2).join(' ')
                 guildData.save()
                 embed = configEmbed(guildData, message, ["message"])
-                message.channel.send(guildData.leveling.message.embed ? { embeds: [new MessageEmbed().setColor(utils.colors.gold).setDescription(messagePreview)], parse: ["roles", "everyone"] } : { content: messagePreview, parse: ["roles", "everyone"] })
+                message.channel.send(guildData.leveling.message.embed ? { embeds: [new MessageEmbed().setColor(utils.colors.gold).setDescription(messagePreview)], allowedMentions: { parse: ["users"] } } : { content: messagePreview, allowedMentions: { parse: ["users"] }})
                 message.reply({ embeds: [embed] })
                 break
             }
