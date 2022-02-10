@@ -3,6 +3,7 @@ const guildDataSc = require('../../schemas/guildData')
 const guildProfileSc = require('../../schemas/guildProfile')
 const utils = require('../../utils')
 const { Command, prefixes } = require('../../utils')
+const process_settings = require('../../process-settings')
 const ms = require('ms')
 
 const command = module.exports = new Command()
@@ -24,7 +25,7 @@ async function execute(toolbox) {
     const configEmbed = utils.activity.configEmbed
 
     if (values.length && values[0] != interaction.member.id) return
-    if ((utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) return message.channel.send("Please use <@876399663002042380> instead!")
+    if ((process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) return message.channel.send("Please use <@876399663002042380> instead!")
 
     let embed = new MessageEmbed()
         .setColor("2f3136")
@@ -114,15 +115,15 @@ async function execute(toolbox) {
 }
 
 function commandsExecute(toolbox) {
-    const { message, interaction } = toolbox
+    const { message, interaction, prefixes } = toolbox
     const values = interaction?.customId.slice("activity:select".length).split('/#~~#/') || []
 
     if (values.length && values[0] != interaction.member.id) return
 
     const embed = new MessageEmbed()
         .setAuthor(message.guild.name, message.guild.iconURL())
-        .addField('View your messages', `\`${utils.prefixes[0]}messages\``)
-        .addField('Module', `\`${utils.prefixes[0]}activity [enable | disable]\`\n\`${utils.prefixes[0]}activity data reset\`\n\`${utils.prefixes[0]}activity data reset [@user | User ID]\``)
+        .addField('View your messages', `\`${prefixes[0]}messages\``)
+        .addField('Module', `\`${prefixes[0]}activity [enable | disable]\`\n\`${prefixes[0]}activity data reset\`\n\`${prefixes[0]}activity data reset [@user | User ID]\``)
         .setFooter("Module Commands")
         .setColor("2f3136")
 

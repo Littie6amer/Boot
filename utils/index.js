@@ -52,14 +52,6 @@ utils.Command = require('./commandBase')
 
 utils.testmedaddy = require('./testmedaddy')
 
-utils.branch = process.env.BOT_BRANCH
-
-utils.token = process.env.BOT_TOKEN
-
-utils.dbURL = process.env.BOT_BRANCH == "recent" ? process.env.RECENT_DB_URL : process.env.RELEASE_DB_URL
-
-utils.prefixes = (require('../data/config.json')).prefixes[utils.branch]
-
 function configEmbed(guildData, message) {
     const data = {
         enabled: guildData.leveling.enabled ? "Enabled" : "Disabled",

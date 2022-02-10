@@ -1,5 +1,4 @@
 const ms = require("ms");
-const config = require('../data/config.json')
 
 class Command {
 
@@ -31,13 +30,13 @@ class Command {
             this.cooldown = 10000
         }
 
-        this.restriction = "ALL"
+        this.restricted = false
         this.permissions = { me: [], user: [] }
         this.execute = (toolbox) => {
             if (toolbox.interaction) {
-                toolbox.interaction.reply({ content: `\`\`\`[${config.name} - MISSING]: No code was set to execute for this command!\`\`\``, ephemeral: true })
+                toolbox.interaction.reply({ content: `\`\`\`[MISSING]: No code was set to execute for this command!\`\`\``, ephemeral: true })
             } else {
-                toolbox.message.reply(`\`\`\`[${config.name} - MISSING]: No code was set to execute for this command!\`\`\``)
+                toolbox.message.reply(`\`\`\`[MISSING]: No code was set to execute for this command!\`\`\``)
             }
         }
         this.buttons = {}
@@ -99,14 +98,10 @@ class Command {
     * @param {string} restriction What users can use that command
     */
 
-    setRestriction(restriction) {
+    restrict() {
         if (this.create) return
 
-        if (["string"].includes(typeof restriction)) {
-            this.restriction = restriction.toUpperCase()
-        } else {
-            throw "Command restriction should be a String"
-        }
+        this.restricted = true
         return this
     }
 
@@ -140,7 +135,7 @@ class Command {
         }
 
         execute = execute || function (toolbox) {
-            toolbox.interaction.reply(`\`\`\`[${config.name} - MISSING]: No code was set to execute for this button!\`\`\``)
+            toolbox.interaction.reply(`\`\`\`[MISSING]: No code was set to execute for this button!\`\`\``)
         }
 
         checkExact = checkExact == false ? false : true
@@ -174,7 +169,7 @@ class Command {
         }
 
         execute = execute || function (toolbox) {
-            toolbox.interaction.reply(`\`\`\`[${config.name} - MISSING]: No code was set to execute for this option!\`\`\``)
+            toolbox.interaction.reply(`\`\`\`[MISSING]: No code was set to execute for this option!\`\`\``)
         }
 
         checkExact = checkExact == false ? false : true

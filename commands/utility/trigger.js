@@ -7,7 +7,7 @@ const guildData = require('../../schemas/guildData')
 command
     .create(["trigger", "t"], "Manage your guild, your user data or just test out things!")
     .setExecute(execute)
-    .setRestriction("DEV")
+    .restrict()
 
 module.exports = command
 

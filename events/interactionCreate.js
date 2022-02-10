@@ -1,4 +1,4 @@
-const config = require('../data/config.json')
+const process_settings = require("../process-settings")
 const guildDataSc = require('../schemas/guildData')
 const guildProfileSc = require('../schemas/guildProfile')
 
@@ -24,7 +24,7 @@ module.exports = async (client, interaction) => {
         userId: interaction.member.id,
     })
 
-    const toolbox = { interaction, client, guildData, userGuildProfile, message: interaction.message }
+    const toolbox = { interaction, client, guildData, userGuildProfile, message: interaction.message, prefixes: process_settings.defaultPrefixes }
 
     const buttons = Array.from(client.buttons, ([id, data]) => (data.id = id, data))
     const slashCommands = client.slashCommands
@@ -47,7 +47,7 @@ module.exports = async (client, interaction) => {
             }
         })
 
-        msg = `[${config.name} - MISSING]: Interaction (button) with customId "${interaction.customId}" wasn't registered!`
+        msg = `[MISSING]: Interaction (button) with customId "${interaction.customId}" wasn't registered!`
     }
 
     if (interaction.isSelectMenu()) {
@@ -61,13 +61,13 @@ module.exports = async (client, interaction) => {
             }
         })
 
-        msg = `[${config.name} - MISSING]: Interaction (dropDown) with customId "${interaction.customId}" wasn't registered!`
+        msg = `[MISSING]: Interaction (dropDown) with customId "${interaction.customId}" wasn't registered!`
     }
 
     if (interaction.isCommand()) {
         selected.push(slashCommands.find(c => c.name.toLowerCase() == interaction.commandName.toLowerCase()))
 
-        msg =  `[${config.name} - MISSING]: Interaction (slashCommand) with commandName "${interaction.commandName}" wasn't registered!`
+        msg =  `[MISSING]: Interaction (slashCommand) with commandName "${interaction.commandName}" wasn't registered!`
     }
 
     if (!selected.length && msg || !selected[0] && msg) {

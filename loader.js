@@ -1,16 +1,5 @@
 const { Collection } = require('discord.js')
 const fs = require('fs')
-const config = require('./data/config.json')
-
-const restrictions = config.restrictions
-
-restrictions["all"] = 1
-
-Object.keys(restrictions).forEach(key => {
-    restrictions[key.toUpperCase()] = restrictions[key]
-    delete restrictions[key]
-})
-
 
 // Load Commands
 const commands = new Collection()
@@ -19,18 +8,17 @@ const slashCommands = new Collection()
 const dropDowns = {}
 const invites = {}
 
-console.log(`${Math.floor(process.uptime()*1000)} [${config.name}]: Searching ./commands`)
+console.log(`${Math.floor(process.uptime()*1000)} [loader.js]: Searching ./commands`)
 loadFolder('./commands')
 function loadFolder(path) {
     fs.readdirSync(path).forEach(c => {
         let path_ = path + '/' + c
         if (!path_.slice(1).includes('.')) {
-            console.log(`${Math.floor(process.uptime()*1000)} [${config.name}]: Searching ${path_}`)
+            console.log(`${Math.floor(process.uptime()*1000)} [loader.js]: Searching ${path_}`)
             loadFolder(path_)
         }
         if (!path_.endsWith('.js')) { } else {
             c = require(path_)
-            if (!restrictions[c.restriction]) throw `Invalid command restriction: "${c.restriction}"`
             commands.set(c.names[0], c)
 
             if (c.buttons) {
@@ -56,10 +44,10 @@ function loadFolder(path) {
 }
 
 console.log(`~~~`)
-console.log(`${Math.floor(process.uptime()*1000)} [${config.name}]: ${commands.size} command(s) loaded!`)
-console.log(`${Math.floor(process.uptime()*1000)} [${config.name}]: ${buttons.size} buttons(s) loaded!`)
-console.log(`${Math.floor(process.uptime()*1000)} [${config.name}]: ${Object.keys(dropDowns).length} dropdown(s) loaded!`)
-console.log(`${Math.floor(process.uptime()*1000)} [${config.name}]: ${slashCommands.size} slash command(s) loaded!`)
+console.log(`${Math.floor(process.uptime()*1000)} [loader.js]: ${commands.size} command(s) loaded!`)
+console.log(`${Math.floor(process.uptime()*1000)} [loader.js]: ${buttons.size} buttons(s) loaded!`)
+console.log(`${Math.floor(process.uptime()*1000)} [loader.js]: ${Object.keys(dropDowns).length} dropdown(s) loaded!`)
+console.log(`${Math.floor(process.uptime()*1000)} [loader.js]: ${slashCommands.size} slash command(s) loaded!`)
 console.log(`~~~`)
 
-module.exports = { commands, dropDowns, buttons, restrictions, slashCommands, invites }
+module.exports = { commands, dropDowns, buttons, slashCommands, invites }

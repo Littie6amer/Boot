@@ -1,15 +1,14 @@
-require('dotenv').config()
+// require('dotenv').config()
 const fs = require('fs')
 const { Client } = require('discord.js')
 const client = new Client({
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"],
 })
-const utils = require("./utils")
+const process_settings = require("./process-settings")
 
 // Connect to the database
 
 const mongoose = require('mongoose')
-const url = process.env.dbToken
 
 // Load commands
 
@@ -30,13 +29,12 @@ fs.readdirSync('./events').forEach(e => {
 })
 
 // Login to the bot
-
-client.login(utils.token)
+client.login(process_settings.botToken)
 
 client.dbState = "disconnected"
 dbConnect()
 function dbConnect() {
-    mongoose.connect(utils.dbURL, {
+    mongoose.connect(process_settings.dbUrl, {
         keepAlive: true,
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -50,7 +48,7 @@ function dbConnect() {
         }
         client.dbState = "connected"
         console.log(`${Math.floor(process.uptime() * 1000)} [Mongoose]: Connected!`)
-        if (client.user) client.user.setPresence({ activities: [{ name: `${utils.prefixes[0]}help | @${utils.branch}` }], status: 'online' });
+        if (client.user) client.user.setPresence({ activities: [{ name: `${process_settings.defaultPrefixes[0]}help | ${process_settings.name}` }], status: 'online' });
     })
 }
 

@@ -5,7 +5,7 @@ const command = module.exports = new Command()
 
 command
     .create(["bypass"], "Create a button list of roles!")
-    .setRestriction("DEV")
+    .restrict()
     .setExecute(execute)
 
 async function execute(toolbox) {
