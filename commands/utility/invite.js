@@ -11,7 +11,7 @@ async function execute(toolbox) {
 
     let user;
     if (args[0]) {
-        try { user = client.users.cache.get(args[0].replaceAll('<', '').replaceAll('!', '').replaceAll('@', '').replaceAll('>', '')) } catch { }
+        try { user = await client.users.fetch(args[0].replaceAll('<', '').replaceAll('!', '').replaceAll('@', '').replaceAll('>', '')) } catch { }
     }
 
     if (!user) {

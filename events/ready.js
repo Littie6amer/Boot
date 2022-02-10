@@ -16,5 +16,6 @@ module.exports = async (client) => {
     console.log(`${Math.floor(process.uptime()*1000)} [${client.user.username}]: Ready!`)
     console.log(`${Math.floor(process.uptime()*1000)} [${client.user.username}]: ${guildcount} Guild(s) with ${client.membercount} Member(s)`)
     console.log('~~~')
-    client.user.setPresence({ activities: [{ name: `${utils.prefixes[0]}help | @${utils.branch}` }], status: 'online' });
+    if (client.dbState == "connected") client.user.setPresence({ activities: [{ name: `${utils.prefixes[0]}help | @${utils.branch}` }], status: 'online' })
+    else client.user.setPresence({ activities: [{ name: `Just Started! Waiting for database...` }], status: 'idle' })
 }

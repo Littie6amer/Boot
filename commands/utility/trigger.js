@@ -97,11 +97,12 @@ async function execute(toolbox) {
             break
         case "list-guilds":
             {
-                let description = []
-                client.guilds.cache.forEach(g => description.push(`**${g.name}:** ${g.memberCount} members (\`${g.id}\`)`))
+                let description = (await client.shard.broadcastEval(s =>
+                    s.guilds.cache.map(g => `**${g.name}:** ${g.memberCount} members (\`${g.id}\`)`)
+                )).map(c => c.join("\n")).join("\n")
                 const embed = new MessageEmbed()
                     .setColor(utils.colors.gold)
-                    .setDescription(description.join('\n'))
+                    .setDescription(description)
                 message.channel.send({ embeds: [embed] })
             }
             break

@@ -15,22 +15,24 @@ module.exports = async (client, message) => {
     // Return if bot or no message content
     if (!message.content || message.webhookId) return
 
-    let guildData = await guildDataSc.findOne({
+    let guildData;
+    if (client.dbState == "connected") guildData = await guildDataSc.findOne({
         guildId: message.guild.id,
     })
 
-    let userGuildProfile = await guildProfileSc.findOne({
+    let userGuildProfile;
+    if (client.dbState == "connected") userGuildProfile = await guildProfileSc.findOne({
         guildId: message.guild.id,
         userId: message.author.id
     })
 
-    if (!guildData) {
+    if (client.dbState == "connected" && !guildData) {
         guildData = await guildDataSc.create({
             guildId: message.guild.id
         })
     }
 
-    if (!userGuildProfile) {
+    if (client.dbState == "connected" &&  !userGuildProfile) {
         userGuildProfile = await guildProfileSc.create({
             guildId: message.guild.id,
             userId: message.author.id,
@@ -38,7 +40,7 @@ module.exports = async (client, message) => {
         first = true
     }
 
-    if (guildData.activity.enabled && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" &&  guildData.activity.enabled && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.activity.channels.find(c => c.id == message.channel.id)) userGuildProfile.activity.channels.push({ id: message.channel.id, messages: 0, replies: 0, spam: 0 })
 
@@ -65,7 +67,7 @@ module.exports = async (client, message) => {
 
     }
 
-    if (guildData.leveling.enabled && !message.spam && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" && guildData.leveling.enabled && !message.spam && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.leveling.lastXpTimestamp || Date.now() - userGuildProfile.leveling.lastXpTimestamp >= guildData.leveling.xp.timeout) {
 
@@ -106,7 +108,7 @@ module.exports = async (client, message) => {
         }
 
     }
-    if (!(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
         if (first) {
             guildProfileSc.updateOne({
                 guildId: message.guild.id,
@@ -151,7 +153,7 @@ module.exports = async (client, message) => {
     }
 
     // Run the command
-    if (command) {
+    if (command && client.dbState == "connected") {
         // Check if the command restriction allows the author to run the command
         if (typeof client.restrictions[command.restriction] == "object" && !client.restrictions[command.restriction].includes(message.author.id)) return
 
@@ -182,5 +184,7 @@ module.exports = async (client, message) => {
                 if (client.cooldowns[message.author.id] && client.cooldowns[message.author.id][command.names[0]] == time) delete client.cooldowns[message.author.id][command.names[0]]
             }, command.cooldown)
         }
+    } else if (command) {
+        return message.reply("Litties Boot is having database issues. Please try again later.")
     }
 }
