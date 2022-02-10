@@ -26,8 +26,8 @@ function execute(toolbox) {
 
     let embed = new MessageEmbed()
         .setAuthor({ name: `${client.user.username} | ${process_settings.name}`, iconURL: client.user.avatarURL(), url: "https://github.com/Littie6amer/Litties-Boot" })
-        .setTitle("Snow is falling!")
-        .setDescription(`Litties Boot allow you to manage your discord server while you're shoveling the snow off you're driveway!`)
+        .setTitle("Flowers are Blooming!")
+        .setDescription(`Litties Boot allow you to manage your discord server while you're watering flowers in your garden!`)
         .addField('What can litties boot do?', `<:blue_dot:929844359812231208> [Leveling](https://boot.tethys.club/modules/leveling)\n<:blue_dot:929844359812231208> [Activity Tracking](https://boot.tethys.club/modules/activity)\n<:blue_dot:929844359812231208> [Other Utilities](https://boot.tethys.club/modules/other-utilities)`)
         .setColor("2f3136")
 
