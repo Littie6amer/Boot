@@ -3,3 +3,4 @@ node_modules
 commands/utility/wallpaper.jpg
 process-settings/recent.env
 process-settings/release.env
+process-settings/configs.js
