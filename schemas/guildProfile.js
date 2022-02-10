@@ -8,10 +8,6 @@ const guildProfileSc = new mongoose.Schema({
       type: Number,
       default: 0
     },
-    messages: {
-      type: Number,
-      default: 0
-    },
     lastXpTimestamp: {
       type: Number,
       default: null

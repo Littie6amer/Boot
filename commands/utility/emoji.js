@@ -11,14 +11,14 @@ command
     .addButton("delete:", deleteButton, false)
 
 async function execute(toolbox) {
-    const { message, args, client } = toolbox
+    const { message, args, client, prefixes } = toolbox
 
     //let emoji = args[0]?.length ? await utils.getEmojiData(args[0], client) : undefined
 
     if (args.length < 2) return message.reply({
         embeds: [
             new MessageEmbed()
-                .setDescription(`\`${utils.prefixes[0]}emoji info :emoji:\`\n\`${utils.prefixes[0]}emoji colors :emoji:\`\n\`${utils.prefixes[0]}emoji palette :emoji: :emoji:\`\n\`${utils.prefixes[0]}emoji palette server\`\n\`${utils.prefixes[0]}emoji delete :emoji:\`\n\`${utils.prefixes[0]}emoji create [Emoji Name]\``)
+                .setDescription(`\`${prefixes[0]}emoji info :emoji:\`\n\`${prefixes[0]}emoji colors :emoji:\`\n\`${prefixes[0]}emoji palette :emoji: :emoji:\`\n\`${prefixes[0]}emoji palette server\`\n\`${prefixes[0]}emoji delete :emoji:\`\n\`${prefixes[0]}emoji create [Emoji Name]\``)
                 .setColor('BLURPLE')
         ]
     })
@@ -32,7 +32,7 @@ async function execute(toolbox) {
         case "info": {
             const emoji = await utils.getEmojiData(args[1], client)
 
-            if (!emoji) return message.reply({ embeds: [utils.embeds.error(`Supply a valid emoji! \`${utils.prefixes[0]}emoji get :emoji:\``)] })
+            if (!emoji) return message.reply({ embeds: [utils.embeds.error(`Supply a valid emoji! \`${prefixes[0]}emoji get :emoji:\``)] })
 
             if (emoji.type == "unicode") {
                 let embed = new MessageEmbed()
@@ -78,7 +78,7 @@ async function execute(toolbox) {
             message.reply("This request may take a while.")
             args[1] == "server" ? emojis.push(...(await getEmojis(message.guild.emojis.cache.map(e => e.toString())))) : emojis.push(...(await getEmojis(args.join(" ").replaceAll("><", "> <").split(" ").slice(1))))
 
-            if (emojis < 1) return message.reply({ embeds: [utils.embeds.error(`Supply valid emojis! \`${utils.prefixes[0]}emoji pallete :emoji: :emoji:\``)] })
+            if (emojis < 1) return message.reply({ embeds: [utils.embeds.error(`Supply valid emojis! \`${prefixes[0]}emoji pallete :emoji: :emoji:\``)] })
 
             for (let i = 0; emojis.length / 10 > i; i++) {
                 let embed = new MessageEmbed()

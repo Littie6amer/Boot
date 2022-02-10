@@ -6,7 +6,7 @@ const command = module.exports = new Command()
 command
     .create(["embed"], "Create an embed")
     .setExecute(execute)
-    .setRestriction("DEV")
+    .restrict()
 
 function execute(toolbox) {
     const { message, client, args } = toolbox

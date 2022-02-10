@@ -8,7 +8,7 @@ const command = module.exports = new Command()
 
 command.create(['suggestion', 'suggestion-settings', 'ss'])
     .setExecute(execute)
-    .setRestriction("DEV")
+    .restrict()
 
 async function execute(toolbox) {
     const { message, client, guildData, args, interaction, userGuildProfile } = toolbox

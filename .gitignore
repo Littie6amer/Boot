@@ -1,4 +1,5 @@
 .env
 node_modules
 commands/utility/wallpaper.jpg
-ecosystem.config.js
+process-settings/recent.env
+process-settings/release.env

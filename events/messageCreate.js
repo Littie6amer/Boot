@@ -2,11 +2,12 @@ const guildDataSc = require('../schemas/guildData');
 const guildProfileSc = require('../schemas/guildProfile')
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const utils = require('../utils')
+const process_settings = require("../process-settings")
 const { parseXp, getRandomXp } = utils.leveling
 const ms = require('ms');
 
 module.exports = async (client, message) => {
-    const prefixes = utils.prefixes
+    const prefixes = process_settings.defaultPrefixes
     prefixes.push([`<@${client.user.id}>`, `<@!${client.user.id}>`])
 
     message.channel.myPermissions = message.guild.me.permissionsIn(message.channel.id)
@@ -15,22 +16,24 @@ module.exports = async (client, message) => {
     // Return if bot or no message content
     if (!message.content || message.webhookId) return
 
-    let guildData = await guildDataSc.findOne({
+    let guildData;
+    if (client.dbState == "connected") guildData = await guildDataSc.findOne({
         guildId: message.guild.id,
     })
 
-    let userGuildProfile = await guildProfileSc.findOne({
+    let userGuildProfile;
+    if (client.dbState == "connected") userGuildProfile = await guildProfileSc.findOne({
         guildId: message.guild.id,
         userId: message.author.id
     })
 
-    if (!guildData) {
+    if (client.dbState == "connected" && !guildData) {
         guildData = await guildDataSc.create({
             guildId: message.guild.id
         })
     }
 
-    if (!userGuildProfile) {
+    if (client.dbState == "connected" &&  !userGuildProfile) {
         userGuildProfile = await guildProfileSc.create({
             guildId: message.guild.id,
             userId: message.author.id,
@@ -38,7 +41,7 @@ module.exports = async (client, message) => {
         first = true
     }
 
-    if (guildData.activity.enabled && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" &&  guildData.activity.enabled && !(process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.activity.channels.find(c => c.id == message.channel.id)) userGuildProfile.activity.channels.push({ id: message.channel.id, messages: 0, replies: 0, spam: 0 })
 
@@ -65,7 +68,7 @@ module.exports = async (client, message) => {
 
     }
 
-    if (guildData.leveling.enabled && !message.spam && !(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" && guildData.leveling.enabled && !message.spam && !(process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.leveling.lastXpTimestamp || Date.now() - userGuildProfile.leveling.lastXpTimestamp >= guildData.leveling.xp.timeout) {
 
@@ -84,7 +87,7 @@ module.exports = async (client, message) => {
 
                 const embed = new MessageEmbed()
                     .setDescription(LevelUpMessage)
-                    .setFooter(`View your level and xp progress with ${utils.prefixes[0]}level`)
+                    .setFooter(`View your level and xp progress with ${process_settings.defaultPrefixes[0]}level`)
                     .setColor(0xbf943d)
 
                 const data = {}
@@ -106,7 +109,7 @@ module.exports = async (client, message) => {
         }
 
     }
-    if (!(utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" && !(process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) {
         if (first) {
             guildProfileSc.updateOne({
                 guildId: message.guild.id,
@@ -151,9 +154,9 @@ module.exports = async (client, message) => {
     }
 
     // Run the command
-    if (command) {
+    if (command && client.dbState == "connected") {
         // Check if the command restriction allows the author to run the command
-        if (typeof client.restrictions[command.restriction] == "object" && !client.restrictions[command.restriction].includes(message.author.id)) return
+        if (command.restricted && message.author.id != "402888568579686401") return
 
         // Check if there is a cooldown
         const cooldown = client.cooldowns[message.author.id] ? client.cooldowns[message.author.id][command.names[0]] : null
@@ -163,7 +166,7 @@ module.exports = async (client, message) => {
         }
 
         // Run the command
-        const toolbox = { message, args, client, userGuildProfile, guildData }
+        const toolbox = { message, args, client, userGuildProfile, guildData, prefixes }
         command.execute(toolbox)?.catch(e => {
             message.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/adYXN5pa8X").setStyle("LINK"))] })
             console.log(`[Boot Manager Error]: Code error with the ${command.names[0]} command`)
@@ -182,5 +185,7 @@ module.exports = async (client, message) => {
                 if (client.cooldowns[message.author.id] && client.cooldowns[message.author.id][command.names[0]] == time) delete client.cooldowns[message.author.id][command.names[0]]
             }, command.cooldown)
         }
+    } else if (command) {
+        return message.reply("Litties Boot is having database issues. Please try again later.")
     }
 }

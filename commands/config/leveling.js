@@ -3,6 +3,7 @@ const guildDataSc = require('../../schemas/guildData')
 const guildProfileSc = require('../../schemas/guildProfile')
 const utils = require('../../utils')
 const { Command } = require('../../utils')
+const process_settings = require('../../process-settings')
 const ms = require('ms')
 
 const command = module.exports = new Command()
@@ -19,13 +20,13 @@ command.create(['leveling', 'leveling-settings', 'ls'])
     .addButton("leveling:reset", resetExecute, false)
 
 async function execute(toolbox) {
-    const { message, client, guildData, args, interaction, userGuildProfile } = toolbox
+    const { message, client, guildData, args, interaction, userGuildProfile, prefixes } = toolbox
     const values = interaction?.customId?.slice(interaction?.customId?.startsWith("leveling:select") ? "leveling:select".length : "leveling:general".length).split('/#~~#/')
     const configEmbed = utils.leveling.configEmbed
     const schema = guildDataSc.schema.obj.leveling
 
     if (values?.length && values[0] != interaction.member.id) return
-    if ((utils.branch == "release" && message.guild.members.cache.get("876399663002042380"))) return message.channel.send("Please use <@876399663002042380> instead!")
+    if ((process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) return message.channel.send("Please use <@876399663002042380> instead!")
 
     let embed = new MessageEmbed()
         .setColor("#529b3a")
@@ -86,7 +87,7 @@ async function execute(toolbox) {
         case "message":
             if (args[1] == "content") {
                 if (!args[2]) {
-                    embed = new MessageEmbed(); embed.setDescription(`\`${utils.prefixes[0]}leveling messsage content [content | reset]\``)
+                    embed = new MessageEmbed(); embed.setDescription(`\`${prefixes[0]}leveling messsage content [content | reset]\``)
                         .setColor('RED')
                     message.reply({ embeds: [embed] })
                     break
@@ -124,7 +125,7 @@ async function execute(toolbox) {
                     message.reply({ embeds: [embed] })
                     break
                 }
-                embed = new MessageEmbed(); embed.setDescription(`\`${utils.prefixes[0]}leveling messsage embed [enable | disable]\``)
+                embed = new MessageEmbed(); embed.setDescription(`\`${prefixes[0]}leveling messsage embed [enable | disable]\``)
                     .setColor('RED')
                 message.reply({ embeds: [embed] })
                 break
@@ -164,7 +165,7 @@ async function execute(toolbox) {
                 message.reply({ embeds: [embed] })
                 break
             }
-            embed = new MessageEmbed().setDescription(`\`${utils.prefixes[0]}leveling messsage content [content]\`\n\`${utils.prefixes[0]}leveling messsage embed [enable | disable]\`\n\`${utils.prefixes[0]}leveling messsage [enable | disable]\`\n\`${utils.prefixes[0]}leveling messsage channel [#channel | any]\``)
+            embed = new MessageEmbed().setDescription(`\`${prefixes[0]}leveling messsage content [content]\`\n\`${prefixes[0]}leveling messsage embed [enable | disable]\`\n\`${prefixes[0]}leveling messsage [enable | disable]\`\n\`${prefixes[0]}leveling messsage channel [#channel | any]\``)
                 .setColor('BLURPLE')
             message.reply({ embeds: [embed] })
             break
@@ -209,7 +210,7 @@ async function execute(toolbox) {
                 message.reply({ embeds: [embed] })
                 break
             }
-            embed = new MessageEmbed(); embed.setDescription(`\`${utils.prefixes[0]}leveling xp rate [Least] [Most]\`\n\`!!leveling xp timeout [time length]\``)
+            embed = new MessageEmbed(); embed.setDescription(`\`${prefixes[0]}leveling xp rate [Least] [Most]\`\n\`!!leveling xp timeout [time length]\``)
                 .setColor('BLURPLE')
             message.reply({ embeds: [embed] })
             break

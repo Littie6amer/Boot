@@ -1,6 +1,7 @@
 const utils = require('../../utils')
 const command = new utils.Command()
 const { MessageButton, MessageActionRow, MessageSelectMenu, MessageEmbed, version } = require('discord.js')
+const process_settings = require('../../process-settings')
 
 command
     .create(["help", "intro", "i", "h", "info", "stats", "botinfo"])
@@ -24,7 +25,7 @@ function execute(toolbox) {
     const input = interaction || message
 
     let embed = new MessageEmbed()
-        .setAuthor({ name: `${client.user.username} @ ${utils.branch}`, iconURL: client.user.avatarURL(), url: "https://github.com/Littie6amer/Litties-Boot" })
+        .setAuthor({ name: `${client.user.username} | ${process_settings.name}`, iconURL: client.user.avatarURL(), url: "https://github.com/Littie6amer/Litties-Boot" })
         .setTitle("Snow is falling!")
         .setDescription(`Litties Boot allow you to manage your discord server while you're shoveling the snow off you're driveway!`)
         .addField('What can litties boot do?', `<:blue_dot:929844359812231208> [Leveling](https://boot.tethys.club/modules/leveling)\n<:blue_dot:929844359812231208> [Activity Tracking](https://boot.tethys.club/modules/activity)\n<:blue_dot:929844359812231208> [Other Utilities](https://boot.tethys.club/modules/other-utilities)`)
@@ -92,14 +93,14 @@ function execute(toolbox) {
 }
 
 function levelingPage(toolbox) {
-    const { interaction, message, client } = toolbox
+    const { interaction, message, client, prefixes } = toolbox
     const values = interaction.customId.slice(interaction.customId.startsWith("help:select") ? "help:select".length : "help:leveling".length).split('/#~~#/')
     if (values[0] != interaction.member.id) return
 
     const embed = new MessageEmbed()
         .setAuthor({ name: "Leveling Module", iconURL: client.user.avatarURL() })
         .setDescription("Allow members to gain xp by sending messages and level up by gaining enough xp to do so!")
-        .addField("Commands", `\`${utils.prefixes[0]}level\`\n\`${utils.prefixes[0]}leveling-settings\``)
+        .addField("Commands", `\`${prefixes[0]}level\`\n\`${prefixes[0]}leveling-settings\``)
         .setColor("2f3136")
 
     let components = [
@@ -133,14 +134,14 @@ function levelingPage(toolbox) {
 }
 
 function activityPage(toolbox) {
-    const { interaction, message, client } = toolbox
+    const { interaction, message, client, prefixes } = toolbox
     const values = interaction.customId.slice(interaction.customId.startsWith("help:select") ? "help:select".length : "help:activity".length).split('/#~~#/')
     if (values[0] != interaction.member.id) return
 
     const embed = new MessageEmbed()
         .setAuthor({ name: "Activity tracking Module", iconURL: client.user.avatarURL() })
         .setDescription("Track how active someone has been in a channel!")
-        .addField("Commands", `\`${utils.prefixes[0]}messages\`\n\`${utils.prefixes[0]}activity-settings\``)
+        .addField("Commands", `\`${prefixes[0]}messages\`\n\`${prefixes[0]}activity-settings\``)
         .setColor("2f3136")
 
     let components = [
@@ -174,16 +175,16 @@ function activityPage(toolbox) {
 }
 
 function otherPage(toolbox) {
-    const { interaction, message, client } = toolbox
+    const { interaction, message, client, prefixes } = toolbox
     const values = interaction.customId.slice(interaction.customId.startsWith("help:select") ? "help:select".length : "help:activity".length).split('/#~~#/')
     if (values[0] != interaction.member.id) return
 
     const embed = new MessageEmbed()
         .setAuthor({ name: "Other Utilities", iconURL: client.user.avatarURL() })
         .setDescription("Litties Boot utility commands")
-        .addField("Role Management", `\`${utils.prefixes[0]}buttonrole\``)
-        .addField("Emoji Management", `\`${utils.prefixes[0]}emoji info\`\n\`${utils.prefixes[0]}emoji palette\`\n\`${utils.prefixes[0]}emoji delete\`\n\`${utils.prefixes[0]}emoji create\``)
-        .addField("Bot Management", `\`${utils.prefixes[0]}invite\`\n\`${utils.prefixes[0]}botlists\``)
+        .addField("Role Management", `\`${prefixes[0]}buttonrole\``)
+        .addField("Emoji Management", `\`${prefixes[0]}emoji info\`\n\`${prefixes[0]}emoji palette\`\n\`${prefixes[0]}emoji delete\`\n\`${prefixes[0]}emoji create\``)
+        .addField("Bot Management", `\`${prefixes[0]}invite\`\n\`${prefixes[0]}botlists\``)
         .setColor("2f3136")
 
     let components = [

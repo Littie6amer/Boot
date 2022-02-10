@@ -1,4 +1,4 @@
-const utils = require("../utils");
+const process_settings = require("../process-settings");
 
 module.exports = async (client) => {
     // client.invites.bugReport = (await client.guilds.cache.get("882345419852632114").invites.fetch({ code: "adYXN5pa8X" })).uses
@@ -16,5 +16,6 @@ module.exports = async (client) => {
     console.log(`${Math.floor(process.uptime()*1000)} [${client.user.username}]: Ready!`)
     console.log(`${Math.floor(process.uptime()*1000)} [${client.user.username}]: ${guildcount} Guild(s) with ${client.membercount} Member(s)`)
     console.log('~~~')
-    client.user.setPresence({ activities: [{ name: `${utils.prefixes[0]}help | @${utils.branch}` }], status: 'online' });
+    if (client.dbState == "connected") client.user.setPresence({ activities: [{ name: `${process_settings.defaultPrefixes[0]}help | ${process_settings.name}` }], status: 'online' })
+    else client.user.setPresence({ activities: [{ name: `Just restarted! Waiting for database...` }], status: 'idle' })
 }
