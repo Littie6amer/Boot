@@ -28,7 +28,7 @@ function execute(toolbox) {
         .setAuthor({ name: `${client.user.username} | ${process_settings.name}`, iconURL: client.user.avatarURL(), url: "https://github.com/Littie6amer/Litties-Boot" })
         .setTitle("Flowers are Blooming!")
         .setDescription(`Litties Boot allow you to manage your discord server while you're watering flowers in your garden!`)
-        .addField('What can litties boot do?', `<:blue_dot:929844359812231208> [Leveling](https://boot.tethys.club/modules/leveling)\n<:blue_dot:929844359812231208> [Activity Tracking](https://boot.tethys.club/modules/activity)\n<:blue_dot:929844359812231208> [Other Utilities](https://boot.tethys.club/modules/other-utilities)`)
+        .addField('What can litties boot do?', `<:dot:871478724439179306> [Leveling](https://boot.tethys.club/modules/leveling)\n<:dot:871478724439179306> [Activity Tracking](https://boot.tethys.club/modules/activity)\n<:dot:871478724439179306> [Other Utilities](https://boot.tethys.club/modules/other-utilities)`)
         .setColor("2f3136")
 
     let components = [
@@ -183,7 +183,7 @@ function otherPage(toolbox) {
         .setAuthor({ name: "Other Utilities", iconURL: client.user.avatarURL() })
         .setDescription("Litties Boot utility commands")
         .addField("Role Management", `\`${prefixes[0]}buttonrole\``)
-        .addField("Emoji Management", `\`${prefixes[0]}emoji info\`\n\`${prefixes[0]}emoji palette\`\n\`${prefixes[0]}emoji delete\`\n\`${prefixes[0]}emoji create\``)
+        .addField("Emoji Management", `\`${prefixes[0]}emoji info\`\n\`${prefixes[0]}emoji delete\`\n\`${prefixes[0]}emoji create\`\n\`${prefixes[0]}emoji list\`\n\`${prefixes[0]}emoji steal\``)
         .addField("Bot Management", `\`${prefixes[0]}invite\`\n\`${prefixes[0]}botlists\``)
         .setColor("2f3136")
 

@@ -41,7 +41,7 @@ module.exports = async (client, message) => {
         first = true
     }
 
-    if (client.dbState == "connected" &&  guildData.activity.enabled && !(process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" &&  guildData.activity.enabled && !(process_settings.name == "release branch" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.activity.channels.find(c => c.id == message.channel.id)) userGuildProfile.activity.channels.push({ id: message.channel.id, messages: 0, replies: 0, spam: 0 })
 
@@ -68,7 +68,7 @@ module.exports = async (client, message) => {
 
     }
 
-    if (client.dbState == "connected" && guildData.leveling.enabled && !message.spam && !(process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" && guildData.leveling.enabled && !message.spam && !(process_settings.name == "release branch" && message.guild.members.cache.get("876399663002042380"))) {
 
         if (!userGuildProfile.leveling.lastXpTimestamp || Date.now() - userGuildProfile.leveling.lastXpTimestamp >= guildData.leveling.xp.timeout) {
 
@@ -109,7 +109,7 @@ module.exports = async (client, message) => {
         }
 
     }
-    if (client.dbState == "connected" && !(process_settings.name == "release" && message.guild.members.cache.get("876399663002042380"))) {
+    if (client.dbState == "connected" && !(process_settings.name == "release branch" && message.guild.members.cache.get("876399663002042380"))) {
         if (first) {
             guildProfileSc.updateOne({
                 guildId: message.guild.id,
@@ -186,6 +186,6 @@ module.exports = async (client, message) => {
             }, command.cooldown)
         }
     } else if (command) {
-        return message.reply("Litties Boot is having database issues. Please try again later.")
+        return message.reply({ embeds: [utils.embeds.error("Litties Boot trying to connect to a database. Try again later")]})
     }
 }

@@ -34,6 +34,14 @@ const guildDataSc = new mongoose.Schema({
         type: Number,
         default: 30000,
       },
+    },
+    roles: {
+      type: Number,
+      default: null
+    },
+    channels: {
+      type: Number,
+      default: null
     }
   },
   activity: {

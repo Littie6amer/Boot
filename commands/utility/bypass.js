@@ -4,7 +4,7 @@ const Command = utils.Command
 const command = module.exports = new Command()
 
 command
-    .create(["bypass"], "Create a button list of roles!")
+    .create(["bypass", "by"], "Bypass cooldowns (meant for devs)")
     .restrict()
     .setExecute(execute)
 

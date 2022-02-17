@@ -14,10 +14,18 @@ command.create(['leveling', 'leveling-settings', 'ls'])
     .addDropOption("leveling:select", [""], toolbox => {
         const { interaction } = toolbox
         if (interaction.values[0] == "general") execute(toolbox)
-        if (interaction.values[0] == "rewards") rewardsExecute(toolbox)
+        if (interaction.values[0] == "roles") (require("./levelroles")).execute(toolbox)
+        if (interaction.values[0] == "channels") (require("./levelchannels")).execute(toolbox)
         if (interaction.values[0] == "commands") commandsExecute(toolbox)
     }, false)
     .addButton("leveling:reset", resetExecute, false)
+
+const levelingOptions = [
+    { label: "General", value: "general" },
+    { label: "Leveling Roles", value: "roles" },
+    { label: "Leveling Channels", value: "channels" },
+    { label: "Commands", value: "commands" },
+]
 
 async function execute(toolbox) {
     const { message, client, guildData, args, interaction, userGuildProfile, prefixes } = toolbox
@@ -54,11 +62,7 @@ async function execute(toolbox) {
                 .setStyle("LINK"),
         ]),
         new MessageActionRow().addComponents([
-            new MessageSelectMenu().setCustomId("leveling:select" + (interaction?.member.id || message.member.id)).addOptions([
-                { label: "General", value: "general" },
-                { label: "Rewards", value: "rewards" },
-                { label: "Commands", value: "commands" },
-            ])
+            new MessageSelectMenu().setCustomId("leveling:select" + (interaction?.member.id || message.member.id)).addOptions(levelingOptions)
         ]),
     ]
     switch (args ? args[0]?.toLowerCase() : undefined) {
@@ -106,7 +110,7 @@ async function execute(toolbox) {
                 guildData.leveling.message.content = args.slice(2).join(' ')
                 guildData.save()
                 embed = configEmbed(guildData, message, ["message"])
-                message.channel.send(guildData.leveling.message.embed ? { embeds: [new MessageEmbed().setColor(utils.colors.gold).setDescription(messagePreview)], allowedMentions: { parse: ["users"] } } : { content: messagePreview, allowedMentions: { parse: ["users"] }})
+                message.channel.send(guildData.leveling.message.embed ? { embeds: [new MessageEmbed().setColor(utils.colors.gold).setDescription(messagePreview)], allowedMentions: { parse: ["users"] } } : { content: messagePreview, allowedMentions: { parse: ["users"] } })
                 message.reply({ embeds: [embed] })
                 break
             }
@@ -244,40 +248,71 @@ async function execute(toolbox) {
     }
 }
 
-function rewardsExecute(toolbox) {
+function rolesExecute(toolbox) {
     const { message, interaction } = toolbox
     const values = interaction?.customId.slice("leveling:select".length).split('/#~~#/') || []
 
     if (values.length && values[0] != interaction.member.id) return
 
     const embed = new MessageEmbed()
-        .setDescription(':gift: **Coming soon!**')
+        .setDescription('Coming soon!')
         .setColor("WHITE")
 
-        let components = [
-            new MessageActionRow().addComponents([
-                new MessageButton()
-                    .setCustomId("null1")
-                    .setLabel('Reward Page Selected')
-                    .setStyle("PRIMARY")
-                    .setDisabled(true),
-                new MessageButton()
-                    .setCustomId("help:leveling" + (interaction?.member.id || message.member.id))
-                    .setLabel('Module Page')
-                    .setStyle("SECONDARY"),
-                new MessageButton()
-                    .setURL('https://boot.tethys.club')
-                    .setLabel('Documentation')
-                    .setStyle("LINK"),
-            ]),
-            new MessageActionRow().addComponents([
-                new MessageSelectMenu().setCustomId("leveling:select" + interaction.member.id).addOptions([
-                    { label: "General", value: "general" },
-                    { label: "Rewards", value: "rewards" },
-                    { label: "Commands", value: "commands" },
-                ])
-            ]),
-        ]
+    let components = [
+        new MessageActionRow().addComponents([
+            new MessageButton()
+                .setCustomId("null1")
+                .setLabel('Roles Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
+            new MessageButton()
+                .setCustomId("help:leveling" + (interaction?.member.id || message.member.id))
+                .setLabel('Module Page')
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setURL('https://boot.tethys.club')
+                .setLabel('Documentation')
+                .setStyle("LINK"),
+        ]),
+        new MessageActionRow().addComponents([
+            new MessageSelectMenu().setCustomId("leveling:select" + interaction.member.id).addOptions(levelingOptions)
+        ]),
+    ]
+
+    interaction.deferUpdate()
+    message.edit({ embeds: [embed], components })
+}
+
+function channelsExecute(toolbox) {
+    const { message, interaction } = toolbox
+    const values = interaction?.customId.slice("leveling:select".length).split('/#~~#/') || []
+
+    if (values.length && values[0] != interaction.member.id) return
+
+    const embed = new MessageEmbed()
+        .setDescription('Coming soon!')
+        .setColor("WHITE")
+
+    let components = [
+        new MessageActionRow().addComponents([
+            new MessageButton()
+                .setCustomId("null1")
+                .setLabel('Channels Page Selected')
+                .setStyle("PRIMARY")
+                .setDisabled(true),
+            new MessageButton()
+                .setCustomId("help:leveling" + (interaction?.member.id || message.member.id))
+                .setLabel('Module Page')
+                .setStyle("SECONDARY"),
+            new MessageButton()
+                .setURL('https://boot.tethys.club')
+                .setLabel('Documentation')
+                .setStyle("LINK"),
+        ]),
+        new MessageActionRow().addComponents([
+            new MessageSelectMenu().setCustomId("leveling:select" + interaction.member.id).addOptions(levelingOptions)
+        ]),
+    ]
 
     interaction.deferUpdate()
     message.edit({ embeds: [embed], components })
@@ -345,11 +380,7 @@ function commandsExecute(toolbox) {
                 .setStyle("LINK"),
         ]),
         new MessageActionRow().addComponents([
-            new MessageSelectMenu().setCustomId("leveling:select" + interaction.member.id).addOptions([
-                { label: "General", value: "general" },
-                { label: "Rewards", value: "rewards" },
-                { label: "Commands", value: "commands" },
-            ])
+            new MessageSelectMenu().setCustomId("leveling:select" + interaction.member.id).addOptions(levelingOptions)
         ]),
     ]
 
