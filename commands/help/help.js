@@ -100,7 +100,7 @@ function levelingPage(toolbox) {
     const embed = new MessageEmbed()
         .setAuthor({ name: "Leveling Module", iconURL: client.user.avatarURL() })
         .setDescription("Allow members to gain xp by sending messages and level up by gaining enough xp to do so!")
-        .addField("Commands", `\`${prefixes[0]}level\`\n\`${prefixes[0]}leveling-settings\``)
+        .addField("Commands", `\`${prefixes[0]}level\`\n\`${prefixes[0]}leveling-settings\`\n\`${prefixes[0]}top levels\``)
         .setColor("2f3136")
 
     let components = [
