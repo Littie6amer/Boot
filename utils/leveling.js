@@ -7,6 +7,7 @@ const leveling = []
 leveling.resources = {
     "backgroundImages": [
         "https://images.pexels.com/photos/2775196/pexels-photo-2775196.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940", // Water Background
+        "https://media.discordapp.net/attachments/801524339265503294/961290936992804975/download.jpg?width=788&height=443",
         "https://images.pexels.com/photos/66997/pexels-photo-66997.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", // Air Background
         "https://images.pexels.com/photos/1743165/pexels-photo-1743165.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500", // Ground Background
     ],

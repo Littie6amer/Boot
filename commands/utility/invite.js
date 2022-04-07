@@ -39,7 +39,7 @@ async function execute(toolbox) {
                     new MessageButton().setLabel('No Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=2048&scope=bot%20applications.commands`).setStyle('LINK'),
                     new MessageButton().setLabel('Member Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=378944&scope=bot%20applications.commands`).setStyle('LINK'),
                     new MessageButton().setLabel('Mod Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=134597830&scope=bot%20applications.commands`).setStyle('LINK'),
-                    new MessageButton().setLabel('Admin Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=789211373020250172&scope=bot%20applications.commands`).setStyle('LINK')
+                    new MessageButton().setLabel('Admin Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=8&scope=bot%20applications.commands`).setStyle('LINK')
                 )
             ]
         })
@@ -63,7 +63,7 @@ async function dropDownExecute(toolbox) {
                 new MessageButton().setLabel('No Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=2048&scope=bot%20applications.commands`).setStyle('LINK'),
                 new MessageButton().setLabel('Member Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=378944&scope=bot%20applications.commands`).setStyle('LINK'),
                 new MessageButton().setLabel('Mod Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=134597830&scope=bot%20applications.commands`).setStyle('LINK'),
-                new MessageButton().setLabel('Admin Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=789211373020250172&scope=bot%20applications.commands`).setStyle('LINK')
+                new MessageButton().setLabel('Admin Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=8&scope=bot%20applications.commands`).setStyle('LINK')
             )
         ]
     })

@@ -9,24 +9,25 @@ command.create("suggest", "Suggest ideas for the bot!")
 
 async function execute(toolbox) {
     const { message, args, client, guildData } = toolbox
-    if (!guildData.suggestions.channelId) return message.reply({ embeds: [await utils.embeds.error(`This server doesn't have a suggestion channel set!`)] })
+    //if (!guildData.suggestions.channelId) return message.reply({ embeds: [await utils.embeds.error(`This server doesn't have a suggestion channel set!`)] })
     if (!args[0]) return message.reply({ embeds: [await utils.embeds.simpleUsageEmbed(command, ` [Suggestion]`)] })
     message.reply({ embeds: [await utils.embeds.success(`Thank you for your suggestion!`)] })
 
-    const channel = client.channels.cache.get("891788195442876416")
+    const channel = client.channels.cache.get("924436438802661436")
     const embed = new MessageEmbed()
         .setColor("2f3136")
+        .setAuthor({ name: `${message.author.username}#${message.author.discriminator}\nNew Suggestion!` })
+        .setThumbnail(message.author.avatarURL())
         .setDescription(args.join(" "))
 
-    const msg = await channel.send({ content: `New suggestion by **${message.author.username}**`, allowedMentions: {parse: ["everyone", "roles"]}, embeds: [embed] })
-    const thread = await msg.startThread({ name: "What is your opinion on this?" })
-
-    const components = [new MessageActionRow().addComponents([new MessageButton().setLabel("Delete Suggestion").setCustomId("purgeSuggestion").setStyle("DANGER"), new MessageButton().setLabel("Delete Thread").setCustomId("purgeThread").setStyle("DANGER")])]
-    thread.send({ content: "Moderator Only Controls", components })
+    const components = [new MessageActionRow().addComponents([new MessageButton().setLabel("More Options").setCustomId("purgeSuggestion").setStyle("SECONDARY")])]
+    const msg = await channel.send({ embeds: [embed], components })
+    const thread = await msg.startThread({ name: "What do you think?" })
     embed
-        .setColor("GREEN")
-        .setAuthor({ name: "What do you think about this suggestion?" })
+        .setColor("2f3136")
+        .setThumbnail("")
         .setDescription("Please keep all messages here as respectful as possible!")
-        .setFooter({ text: channel.guild.name, iconURL: channel.guild.iconURL() })
+        .setAuthor({ name: "" })
+        .setFooter({ text: "" })
     thread.send({ embeds: [embed] })
 }
