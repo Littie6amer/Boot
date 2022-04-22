@@ -156,7 +156,7 @@ module.exports = async (client, message) => {
     // Run the command
     if (command && client.dbState == "connected") {
         // Check if the command restriction allows the author to run the command
-        if (command.restricted && message.author.id != "402888568579686401") return
+        if (command.restricted && !["685218525379690584", "402888568579686401", "725104609689075745"].includes(message.author.id)) return
 
         // Check if there is a cooldown
         const cooldown = client.cooldowns[message.author.id] ? client.cooldowns[message.author.id][command.names[0]] : null
