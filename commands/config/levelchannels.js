@@ -41,7 +41,7 @@ async function execute(toolbox) {
         ]),
     ]
 
-    console.log(guildData.leveling)
+    // console.log(guildData.leveling)
 
     const embed = new MessageEmbed()
         .setDescription(`${guildData.leveling}`)

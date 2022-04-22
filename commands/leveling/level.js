@@ -17,12 +17,12 @@ async function execute(toolbox) {
 
     const values = interaction?.customId.slice("rank:".length).split('/#~~#/')
     if (values && (values[1] != interaction.member.id)) return
-    
+
     if (!guildData.leveling.enabled) {
         const embed = new MessageEmbed()
-        .setAuthor(`Leveling - ${message.guild.name}`, message.guild.iconURL())
-        .setDescription('<a:redcross:868671069786099752> Leveling module disabled!')
-        .setColor('RED')
+            .setAuthor(`Leveling - ${message.guild.name}`, message.guild.iconURL())
+            .setDescription('<a:redcross:868671069786099752> Leveling module disabled!')
+            .setColor('RED')
         return message.reply({ embeds: [embed] })
     }
 
@@ -30,7 +30,6 @@ async function execute(toolbox) {
     const { resources, parseXp, applyBackground, roundedRect, roundedClip } = utils.leveling
 
     const config = {
-        "useSolidColorBackground": false,
         "showGuildName": false,
         "showUserAvatar": true
     }
@@ -38,17 +37,19 @@ async function execute(toolbox) {
     let user, member;
 
     if (args && args[0]) {
-        try { user = await client.users.fetch(args[0]) } catch { }
+        try { user = await client.users.fetch(args[0], { force: true }) } catch { }
         if (user && message.guild.members.cache.get(user.id)) member = message.guild.members.cache.get(user.id)
+        //if (user) user = await user.fetch({ force: true })
     }
 
+
     if (message && message.mentions.members.first() && !user) {
-        user = message.mentions.members.first().user
+        user = await message.mentions.members.first().user.fetch({ force: true })
         member = message.mentions.members.first()
     }
 
     if (!user) {
-        user = message ? message.author : interaction.member.user
+        user = message ? await message.author.fetch({ force: true }) : await interaction.member.user.fetch({ force: true })
         member = message ? message.member : interaction.member
     }
 
@@ -64,12 +65,22 @@ async function execute(toolbox) {
     const canvas = Canvas.createCanvas(560, config.showGuildName ? 200 : 155)
     const context = canvas.getContext('2d');
 
-    // drawing card background
-    await applyBackground(canvas, context, utils.leveling.resources.backgroundImages[0])
-    context.fillStyle = "#000000AA"
-    context.fillRect(0, 0, canvas.width, canvas.height)
-    let background = await Canvas.loadImage("https://cdn.discordapp.com/attachments/801524339265503294/925153367263703110/profile-image.png")
-    context.drawImage(background, 0, 0, canvas.width, canvas.height)
+    let statText = { y: config.showGuildName ? 120 : 95 }
+    let progressBar = { y: config.showGuildName ? 185 : 115, x: 20, width: 520 }
+    let profile = { y: config.showGuildName ? 50 : 20 }
+
+    if (message.author.banner) {
+        let background = await Canvas.loadImage(user.bannerURL({ format: "png" }))
+        context.drawImage(background, 0, 0, canvas.width, canvas.height)
+        context.fillStyle = "#000000AA"
+        context.fillRect(0, 0, canvas.width, canvas.height)
+    } else {
+        // await applyBackground(canvas, context, "https://media.discordapp.net/attachments/801513138398298163/961308073308340305/unknown.png?width=265&height=79")
+        // let background = await Canvas.loadImage("https://cdn.discordapp.com/attachments/801524339265503294/925153367263703110/profile-image.png")
+        // context.drawImage(background, 0, 0, canvas.width, canvas.height)
+        context.fillStyle = "#202225"
+        context.fillRect(0, 0, canvas.width, canvas.height)
+    }
 
     // guild text
     context.fillStyle = "#fff"
@@ -81,44 +92,48 @@ async function execute(toolbox) {
     // username text
     context.fillStyle = "#fff"
     context.font = '20px Open Sans Bold'
-    context.fillText(user.username.toLowerCase(), config.showUserAvatar ? 80 : 20, config.showGuildName ? 68 : 38)
+    context.fillText(user.username, config.showUserAvatar ? 80 : 20, config.showGuildName ? 80 : 50)
+    let usernameText = context.measureText(user.username).width
 
-    // role text
+    // tag text 
+    context.font = '18px Open Sans Bold'
     context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
-    context.fillText("no reward.", config.showUserAvatar ? 80 : 20, config.showGuildName ? 92 : 62)
+    context.fillText("#"+user.discriminator, (config.showUserAvatar ? 85 : 25) + usernameText, config.showGuildName ? 80 : 50)
 
     // progress background color
+    context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
+    roundedRect(context, progressBar.x, progressBar.y, progressBar.width, 18, 5)
     context.fillStyle = "#000000AA"
-    roundedRect(context, 20, config.showGuildName ? 120 : 85, 512, 18, 10)
+    roundedRect(context, progressBar.x, progressBar.y, progressBar.width, 18, 5)
 
     // progress bar 
     context.fillStyle = findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : "#ffffff"
-    if (xp) roundedRect(context, 20, config.showGuildName ? 120 : 85, (xp / xpAmounts[0]) * 520, 18, 10)
+    if (xp) roundedRect(context, progressBar.x, progressBar.y, (xp / xpAmounts[0]) * progressBar.width, 18, 5)
 
     // level text
     context.textAlign = "right"
     context.fillStyle = "#fff"
     context.font = '18px Open Sans Bold'
-    context.fillText(`Level ${level || 0}`, 530, config.showGuildName ? 185 : 135)
+    context.fillText(`Level ${level || 0}`, 540, statText.y)
 
     // xp text
     context.textAlign = "left"
     context.fillStyle = "#fff"
     context.font = '18px Open Sans Bold'
-    context.fillText(`${xp || 0} / ${xpAmounts[0]} Xp`, 20, config.showGuildName ? 185 : 135)
+    context.fillText(`${xp || 0} / ${xpAmounts[0]} XP`, 20, statText.y)
 
     // message text
     context.textAlign = "center"
     context.fillStyle = "#fff"
     context.font = '18px Open Sans Bold'
-    context.fillText(`${mentionedGuildProfile?.activity?.overall?.messages || 0} Messages`, canvas.width / 2, config.showGuildName ? 185 : 135)
+    context.fillText(`${mentionedGuildProfile?.activity?.overall?.messages || 0} Messages`, canvas.width / 2, statText.y)
 
     // avatar drawing
     const avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));
-    roundedClip(context, 20, config.showGuildName ? 50 : 20, 45, 45, 5);
-    if (config.showUserAvatar) context.drawImage(avatar, 20, config.showGuildName ? 50 : 20, 45, 45);
+    roundedClip(context, 20, profile.y, 45, 45, 5);
+    if (config.showUserAvatar) context.drawImage(avatar, 20, profile.y, 45, 45);
 
-    const attachment = new MessageAttachment(canvas.toBuffer(), `${user.username}.png`);
+    const attachment = new MessageAttachment(canvas.toBuffer(), `${user.username}-profile.png`);
 
     let components = []
 

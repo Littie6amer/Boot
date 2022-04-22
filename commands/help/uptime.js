@@ -3,7 +3,7 @@ const ms = require("ms")
 const { Command } = require("../../utils")
 const command = new Command()
 
-command.create(["uptime"])
+command.create(["uptime", "up"])
     .setExecute(execute)
     .makeSlashCommand()
 
