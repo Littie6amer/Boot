@@ -39,7 +39,7 @@ async function execute(toolbox) {
                 new MessageActionRow().addComponents(
                     new MessageButton().setLabel('Top.gg').setURL(`https://top.gg/bot/${user.id}`).setStyle('LINK'),
                     new MessageButton().setLabel('Discord Bot List').setURL(`https://discordbotlist.com/bots/${user.id}`).setStyle('LINK'),
-                    new MessageButton().setLabel('Infinity Bot List').setURL(`https://ibl.rocks/bots/${user.id}`).setStyle('LINK'),
+                    new MessageButton().setLabel('Infinity Bot List').setURL(`https://infinitybots.gg/bots/${user.id}`).setStyle('LINK'),
                 )
             ]
         })
