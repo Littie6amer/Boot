@@ -78,11 +78,31 @@ async function execute(toolbox) {
 
             if (emojis < 1) return message.reply({ embeds: [utils.embeds.error(`Supply valid emojis! \`${prefixes[0]}emoji list :emoji: :emoji:\``)] })
 
-            for (let i = 0; emojis.length / 10 > i; i++) {
+            let count = 0; let stuff = []
+            for (let i = 0; emojis.length > i; i++) {
+                let e = emojis[i];
+                let panel = `${e.mention} ${e.mention.replace(":", "*:*")} [Image](${e.URLs.common})\n`;
+                if (count + panel.length < 4000) {
+                    count += panel.length; stuff.push(panel)
+                } else {
+                    let embed = new MessageEmbed()
+                        .setDescription(`${stuff.join("")}`)
+                        .setColor("#2f3136")
+                    if (i == 0) embed.setAuthor({ name: `${message.author.username}'s Emoji List`, url: message.author.avatarURL() })
+                    embeds.push(embed)
+                    stuff = []; count = panel.length; stuff.push(panel)
+                }
+                // let embed = new MessageEmbed()
+                //     .setDescription(`${emojis.slice(i * 10, i * 10 + 10).map(e => `${e.mention} ${e.mention.replace(":", "*:*")} [Image](${e.URLs.common})`).join("\n")}`)
+                //     .setColor("#2f3136")
+                // if (i == 0) embed.setAuthor({ name: `${message.author.username}'s Emoji List`, url: message.author.avatarURL() })
+                // embeds.push(embed)
+            }
+            if (stuff.length && count < 4000) {
                 let embed = new MessageEmbed()
-                    .setDescription(`${emojis.slice(i * 10, i * 10 + 10).map(e => `${e.mention} ${e.mention.replace(":", "*:*")} [Image](${e.URLs.common})`).join("\n")}`)
+                    .setDescription(`${stuff.join("")}`)
                     .setColor("#2f3136")
-                if (i == 0) embed.setAuthor({ name: `${message.author.username}'s Emoji List`, url: message.author.avatarURL() })
+                if (!embeds.length) embed.setAuthor({ name: `${message.author.username}'s Emoji List`, url: message.author.avatarURL() })
                 embeds.push(embed)
             }
         }; break

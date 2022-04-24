@@ -42,7 +42,8 @@ async function execute(toolbox) {
 
     }
 
-    if (errors) return await message.reply({ content: `\`\`\`${Object.keys(errors).map(err => errors[err].map(e => `${err} (@${message.guild.roles.cache.get(err)?.name}): ${e}`).join("\n")).join("\n")}\`\`\``, embeds: [utils.embeds.error(`This request returned some errors`)]})
+    console.log(errors)
+    if (Object.keys(errors).length) return await message.reply({ content: `\`\`\`${Object.keys(errors).map(err => errors[err].map(e => `${err} (@${message.guild.roles.cache.get(err)?.name}): ${e}`).join("\n")).join("\n")}\`\`\``, embeds: [utils.embeds.error(`This request returned some errors`)]})
     if (options.length < 1 || options.length > 10) return message.reply({ content: `1-10 Roles are needed` });
 
     const embed = new MessageEmbed()

@@ -168,7 +168,7 @@ module.exports = async (client, message) => {
         // Run the command
         const toolbox = { message, args, client, userGuildProfile, guildData, prefixes }
         command.execute(toolbox)?.catch(e => {
-            message.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/adYXN5pa8X").setStyle("LINK"))] })
+            message.reply({ content: `**Welp!** Seems like something went wrong!\n\`\`\`${e}\`\`\``, components: [new MessageActionRow().addComponents(new MessageButton().setLabel('Report The Error!').setURL("https://discord.gg/M8t7x64deZ").setStyle("LINK"))] })
             console.log(`[Boot Manager Error]: Code error with the ${command.names[0]} command`)
             console.log(`~~~`)
             console.error(e)
