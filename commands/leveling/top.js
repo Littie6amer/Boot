@@ -28,9 +28,9 @@ async function execute(toolbox) {
     //const components = []
     let { xp, level } = utils.leveling.parseXp(userGuildProfile.leveling.xp)
     let yourRankDisplay = args[0].toLowerCase() == "levels" ? `${level ? `Level ${level}, ` : ""}${xp}XP` : `${userGuildProfile.activity.overall.messages} messages`
-    let rank = "00".slice(`${users.findIndex(u => u.userId == message.author.id)} + 1`.length) + users.findIndex(u => u.userId == message.author.id) + 1
+    let rank = "00".slice(`${users.findIndex(u => u.userId == message.author.id) + 1}`.length) + (users.findIndex(u => u.userId == message.author.id) + 1)
     const embed = new MessageEmbed()
-        .setAuthor({ name: message.guild.name, iconURL: message.guild.iconURL() })
+        .setAuthor({ name: message.guild.name+"\nShowing Top Members", iconURL: message.guild.iconURL() })
         .setDescription(
             users.map(u =>
                 leaderboardPlace(message.guild.members.cache.get(u.userId).user, u, users.findIndex(i => i == u) + 1, args[0].toLowerCase())
@@ -48,6 +48,6 @@ function sortBy(a, b, type) {
 
 function leaderboardPlace(user, userData, rank, type) {
     let { xp, level } = utils.leveling.parseXp(userData.leveling.xp)
-    let display = type == "levels" ? `${level ? `Level ${level}, ` : ""}${xp}XP` : `${userData.activity.overall.messages} messages`
+    let display = type == "levels" ? `${level ? `Level **${level}**, ` : ""}${xp}XP` : `**${userData.activity.overall.messages}** msgs`
     return `\`Rank #${"00".slice(rank.toString().length) + rank}\`<:Blank1:801947188590411786>[${user.username}](https://discord.com/users/${user.id}) - ${display}`
 }

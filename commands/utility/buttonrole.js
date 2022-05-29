@@ -42,9 +42,10 @@ async function execute(toolbox) {
 
     }
 
-    console.log(errors)
+    console.log()
     if (Object.keys(errors).length) return await message.reply({ content: `\`\`\`${Object.keys(errors).map(err => errors[err].map(e => `${err} (@${message.guild.roles.cache.get(err)?.name}): ${e}`).join("\n")).join("\n")}\`\`\``, embeds: [utils.embeds.error(`This request returned some errors`)]})
     if (options.length < 1 || options.length > 10) return message.reply({ content: `1-10 Roles are needed` });
+    if (options.length > (Array.from(new Set(options.map(op => op.roleId))).length)) return message.reply({ content: `Duplicate roles!` });
 
     const embed = new MessageEmbed()
         .setTitle(title)

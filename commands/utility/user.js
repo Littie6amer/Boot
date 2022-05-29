@@ -6,7 +6,7 @@ const command = module.exports = new Command()
 
 command
     .create(["u", "usr", "user"], "User utilties")
-    .setExecute(execute)
+    .setPreviewExecute(execute)
 
 async function execute(toolbox) {
     const { message, args, client, prefixes } = toolbox

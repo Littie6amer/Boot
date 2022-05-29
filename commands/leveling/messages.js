@@ -44,27 +44,27 @@ async function execute(toolbox) {
     const channels = []
     let deletedChannelCount = 0
     let deletedMesages = 0
-    if (mentionedGuildProfile?.activity) Object.keys(mentionedGuildProfile.activity.channels).forEach(channel => {
+    if (mentionedGuildProfile?.activity) Object.keys(mentionedGuildProfile.activity.channels.sort((a, b) => a.messages - b.messages).reverse()).forEach(channel => {
         channel = mentionedGuildProfile.activity.channels[channel]
-        if (message.guild.channels.cache.get(channel.id)) {
+        if (message.guild.channels.cache.get(channel.id) && message.member.permissionsIn(channel.id).has("VIEW_CHANNEL")) {
             if (message.member.permissions.has("MANAGE_MESSAGES")) {
-                channels.push(`\`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies<:Blank1:801947188590411786>**${channel.spam}** spam`)
+                channels.push(`\`#${"00".slice(`${channels.length+1}`.length) + `${channels.length+1}`}\`<:Blank4:801947320064933909>[#${shorterText(message.guild.channels.cache.get(channel.id).name)}](https://canary.discord.com/channels/${message.guild.id}/${channel.id}) - **${channel.messages}** msgs, **${channel.replies}** replies, **${channel.spam}** spam`)
             } else {
-                channels.push(`\`#${message.guild.channels.cache.get(channel.id).name}\`\n<:Blank1:801947188590411786>**${channel.messages}** messages<:Blank1:801947188590411786>**${channel.replies}** replies`)
+                channels.push(`\`#${"00".slice(`${channels.length+1}`.length) + `${channels.length+1}`}\`<:Blank4:801947320064933909>[#${shorterText(message.guild.channels.cache.get(channel.id).name)}](https://canary.discord.com/channels/${message.guild.id}/${channel.id}) - **${channel.messages}** msgs, **${channel.replies}** replies`)
             }
         } else {
             deletedChannelCount++; deletedMesages += channel.messages
         }
     })
 
-    const components = [new MessageActionRow().addComponents([
-        new MessageButton().setCustomId('rank:' + user.id + "/#~~#/" + input.member.id).setEmoji('👤').setLabel('Rank').setStyle('SECONDARY'),
-        //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
-    ])]
+    // const components = [new MessageActionRow().addComponents([
+    //     new MessageButton().setCustomId('rank:' + user.id + "/#~~#/" + input.member.id).setEmoji('👤').setLabel('Rank').setStyle('SECONDARY'),
+    //     //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
+    // ])]
 
     const embed = new MessageEmbed()
-        .setAuthor(user.username, user.avatarURL())
-        .setDescription(`${channels?.join('\n') ? `${channels?.join('\n ')}` : `<:redboot:902910668091576331> **No data collected on this user**`} ${deletedChannelCount ? `\n**Deleted channels** \`${deletedChannelCount} channels\`\n<:Blank1:801947188590411786>**${deletedMesages}** messages` : ""}`)
+        .setAuthor(user.username+ "\nShowing Top Channels", user.avatarURL())
+        .setDescription(`${channels?.slice(0, 10).join('\n') ? `${channels?.slice(0, 10).join('\n ')}` : `<:redboot:902910668091576331> **No data collected on this user**`}`)// ${deletedChannelCount ? `\n**Hidden or deleted channels** \`${deletedChannelCount} channels\`\n<:Blank1:801947188590411786>**${deletedMesages}** messages` : ""}`)
         .setColor(findBrightestColor(colors).index > -1 ? rbgToHex(colors[findBrightestColor(colors).index]._rgb) : 0xbf943d)
     if (mentionedGuildProfile?.activity?.overall) {
         if (message.member.permissions.has("MANAGE_MESSAGES")) {
@@ -75,8 +75,17 @@ async function execute(toolbox) {
     }
     if (interaction?.message) {
         interaction.deferUpdate()
-        interaction.message.edit({ embeds: [embed], components, attachments: [] })
+        interaction.message.edit({ embeds: [embed], attachments: [] })
     } else {
-        input.reply({ embeds: [embed], components })
+        input.reply({ embeds: [embed] })
     }
+}
+
+function shorterText (text) {
+    if (text.length > 15) text = text.slice(0, 15) + "..."
+    return text
+}
+
+async function preview (toolbox) {
+
 }

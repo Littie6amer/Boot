@@ -25,13 +25,13 @@ const embeds = {
   success(text) {
     const embed = new MessageEmbed()
       .setColor("GREEN")
-      .setDescription(`<a:greencheck:868670956716052510><:Blank1:801947188590411786>${text}`)
+      .setDescription(`<:cheque:975045403663818822><:Blank1:801947188590411786>${text}`)
     return embed
   },
   error(text) {
     const embed = new MessageEmbed()
       .setColor("RED")
-      .setDescription(`<:negative:934545873738797176><:Blank1:801947188590411786>${text}`)
+      .setDescription(`<:cross:975045238164955186><:Blank1:801947188590411786>${text}`)
     return embed
   }
 }
