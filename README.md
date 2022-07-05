@@ -1,8 +1,6 @@
 # Litties-Boot
 **Now released!**\
 Join the [Discord Server](https://discord.gg/AJEH4V7Whz) to stay up to date!\
-View https://github.com/Littie6amer/Litties-Boot-Blank for a base discord.js v13 bot.
-
 
 
 # Feature List / Bot Help
