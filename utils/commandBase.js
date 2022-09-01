@@ -36,7 +36,7 @@ class Command {
             if (toolbox.interaction) {
                 toolbox.interaction.reply({ content: `\`\`\`[MISSING]: No code was set to execute for this command!\`\`\``, ephemeral: true })
             } else {
-                toolbox.message.reply(`\`\`\`[MISSING]: No code was set to execute for this command!\`\`\``)
+                toolbox.message.reply(`\`\`\`[MISSING]: No code was set to execute for this command! (Maybe its only for preview?)\`\`\``)
             }
         }
         this.buttons = {}
@@ -180,6 +180,18 @@ class Command {
             for (let v in values) {
                 this.dropDowns[id].values[values[v]] = { execute, checkExact }
             }
+        }
+
+        return this
+    }
+
+    setPreviewExecute(execute) {
+        if (this.create) return
+
+        if (["function"].includes(typeof execute)) {
+            this.previewExecute = execute
+        } else {
+            throw "Command execute should be a Function"
         }
 
         return this

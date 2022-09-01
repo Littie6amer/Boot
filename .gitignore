@@ -1,5 +1,6 @@
 .env
 node_modules
+package-lock.json
 commands/utility/wallpaper.jpg
 process-settings/recent.env
 process-settings/release.env

@@ -81,15 +81,15 @@ async function execute(toolbox) {
             break
         case "leave":
             {
-                let guild = client.guilds.cache.get(args[1])
+                let guild = args[1] ? client.guilds.cache.get(args[1]) : message.guild
                 if (!guild) {
                     guild = client.guilds.cache.find(g => g.name.toLowerCase().startsWith(args[1].toLowerCase()))
                 }
 
                 if (guild) {
                     let owner = await guild.fetchOwner()
+                    await message.channel.send(`Left **${guild.name}**, owned by **${owner.user.tag}**`)
                     guild.leave()
-                    message.channel.send(`Left **${guild.name}** which is owned by **${owner.user.tag}**`)
                 } else {
                     message.channel.send(`Found 0 servers`)
                 }

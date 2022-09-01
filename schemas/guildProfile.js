@@ -42,7 +42,11 @@ const guildProfileSc = new mongoose.Schema({
   bypass: {
     default: false,
     type: Boolean
-  }
+  },
+  preview: {
+    default: false,
+    type: Boolean
+  },
 })
 
 module.exports = new mongoose.model('guildprofiles', guildProfileSc)

@@ -26,8 +26,8 @@ function execute(toolbox) {
 
     let embed = new MessageEmbed()
         .setAuthor({ name: `${client.user.username} | ${process_settings.name}`, iconURL: client.user.avatarURL(), url: "https://github.com/Littie6amer/Litties-Boot" })
-        .setTitle("Flowers are Blooming!")
-        .setDescription(`Litties Boot allow you to manage your discord server while you're watering flowers in your garden!`)
+        .setTitle("Take a walk!")
+        .setDescription(`Litties Boot will manage your server while you're away having fun!`)
         .addField('What can litties boot do?', `<:dot:871478724439179306> [Leveling](https://boot.tethys.club/modules/leveling)\n<:dot:871478724439179306> [Activity Tracking](https://boot.tethys.club/modules/activity)\n<:dot:871478724439179306> [Other Utilities](https://boot.tethys.club/modules/other-utilities)`)
         .setColor("2f3136")
 
@@ -74,6 +74,7 @@ function execute(toolbox) {
                 .setDescription(command.description)
                 .addField('Names', `\`${command.names.join('\`, \`')}\``)
                 .addField('Is slash command?', `${command.slashExecute ? true : false}`)
+                .addField('Preview mode?', `${command.previewExecute ? true : false}`)
                 .setColor("2f3136")
 
         } else {
@@ -141,7 +142,7 @@ function activityPage(toolbox) {
     const embed = new MessageEmbed()
         .setAuthor({ name: "Activity tracking Module", iconURL: client.user.avatarURL() })
         .setDescription("Track how active someone has been in a channel!")
-        .addField("Commands", `\`${prefixes[0]}messages\`\n\`${prefixes[0]}activity-settings\``)
+        .addField("Commands", `\`${prefixes[0]}messages\`\n\`${prefixes[0]}activity-settings\`\n\`${prefixes[0]}top messages\``)
         .setColor("2f3136")
 
     let components = [
@@ -183,7 +184,7 @@ function otherPage(toolbox) {
         .setAuthor({ name: "Other Utilities", iconURL: client.user.avatarURL() })
         .setDescription("Litties Boot utility commands")
         .addField("Role Management", `\`${prefixes[0]}buttonrole\``)
-        .addField("Emoji Management", `\`${prefixes[0]}emoji info\`\n\`${prefixes[0]}emoji delete\`\n\`${prefixes[0]}emoji create\`\n\`${prefixes[0]}emoji list\`\n\`${prefixes[0]}emoji steal\``)
+        .addField("Emoji Management", `\`${prefixes[0]}emoji info\`\n\`${prefixes[0]}emoji delete\`\n\`${prefixes[0]}emoji rename\`\n\`${prefixes[0]}emoji create\`\n\`${prefixes[0]}emoji list\`\n\`${prefixes[0]}emoji steal\``)
         .addField("Bot Management", `\`${prefixes[0]}invite\`\n\`${prefixes[0]}botlists\``)
         .setColor("2f3136")
 

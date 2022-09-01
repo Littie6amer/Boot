@@ -7,6 +7,7 @@
     "@discordjs/rest": "^0.1.0-canary.0",
     "canvas": "^2.9.3",
     "color-to-name": "^1.1.0",
+    "contrast": "^1.0.1",
     "discord.js": "^13.6.0",
     "dotenv": "^10.0.0",
     "get-contrast-ratio": "^0.2.1",

@@ -71,6 +71,14 @@ const guildDataSc = new mongoose.Schema({
       type: Array,
       default: [],
     }
+  },
+  verification: {
+    roleId: {
+      type: String
+    }
+  },
+  botroleColor: {
+    type: String
   }
 })
 

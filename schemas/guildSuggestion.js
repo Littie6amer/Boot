@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const guildDataSc = new mongoose.Schema({
     guildId: String,
     messageId: String,
-    threadId: String,
     authorId: String,
     authorTag: String,
     content: String,
+    thread: Boolean,
     votes: {
         positive: {
             type: Array,
@@ -19,4 +19,4 @@ const guildDataSc = new mongoose.Schema({
     }
 })
 
-module.exports = new mongoose.model('guilddatas', guildDataSc)
+module.exports = new mongoose.model('guildsuggestions', guildDataSc)
