@@ -36,7 +36,7 @@ async function execute(toolbox) {
         message.reply({
             embeds: [new MessageEmbed().setAuthor(`${user.username} [ #${user.discriminator} ]`).setDescription(`Click the buttons below to invite\n${user.username} to your server.`).addField('Please Note', 'If you give a bot you dont trust too many\npermissions, their stay there may go badly.').setThumbnail(user.avatarURL()).setColor(0xbf943d)], components: [
                 new MessageActionRow().addComponents(
-                    new MessageButton().setLabel('No Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=2048&scope=bot%20applications.commands`).setStyle('LINK'),
+                    new MessageButton().setLabel('No Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=0&scope=bot%20applications.commands`).setStyle('LINK'),
                     new MessageButton().setLabel('Member Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=378944&scope=bot%20applications.commands`).setStyle('LINK'),
                     new MessageButton().setLabel('Mod Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=134597830&scope=bot%20applications.commands`).setStyle('LINK'),
                     new MessageButton().setLabel('Admin Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=8&scope=bot%20applications.commands`).setStyle('LINK')
@@ -60,7 +60,7 @@ async function dropDownExecute(toolbox) {
     message.edit({
         embeds: [new MessageEmbed().setAuthor(`${user.username} [ #${user.discriminator} ]`).setDescription(`Click the buttons below to invite\n${user.username} to your server.`).addField('Please Note', 'If you give a bot you dont trust too many\npermissions, their stay there may go badly.').setThumbnail(user.avatarURL()).setColor(0xbf943d)], components: [
             new MessageActionRow().addComponents(
-                new MessageButton().setLabel('No Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=2048&scope=bot%20applications.commands`).setStyle('LINK'),
+                new MessageButton().setLabel('No Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=0&scope=bot%20applications.commands`).setStyle('LINK'),
                 new MessageButton().setLabel('Member Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=378944&scope=bot%20applications.commands`).setStyle('LINK'),
                 new MessageButton().setLabel('Mod Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=134597830&scope=bot%20applications.commands`).setStyle('LINK'),
                 new MessageButton().setLabel('Admin Perms').setURL(`https://discord.com/api/oauth2/authorize?client_id=${user.id}&permissions=8&scope=bot%20applications.commands`).setStyle('LINK')
