@@ -4,7 +4,7 @@ import { Client, CommandContext, SlashCommandBase } from "indigo-client";
 export class Command extends SlashCommandBase {
     constructor(client: Client) {
         super(client, {
-            name: "aria",
+            name: "boot",
             description: "The help command needs a better description",
         })
     }
@@ -15,8 +15,8 @@ export class Command extends SlashCommandBase {
             return subcommands.map(cmd => `\`/${name} ${cmd}\``).join("\n")
         }
         const embed = new EmbedBuilder()
-            .setColor("Blurple")
-            .setAuthor({ name: (this.client.user?.username||"Aria")+" › Utility", iconURL: this.client.user?.avatarURL() || undefined })
+            .setColor(this.client.embedColor)
+            .setAuthor({ name: (this.client.user?.username||"Boot")+" › Utility", iconURL: this.client.user?.avatarURL() || undefined })
             .setDescription(`Keeping things professional around your server.`)
             .addFields(
                 [
