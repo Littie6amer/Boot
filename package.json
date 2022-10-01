@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "discord.js": "^14.5.0",
+    "dotenv": "^16.0.1",
+    "indigo-client": "file:../Indigo-Client",
+    "mongoose": "^6.4.4"
+  },
+  "name": "aria",
+  "version": "1.1.0",
+  "description": "utility bot",
+  "main": "build/index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Littie6amer/Litties-Boot.git"
+  },
+  "keywords": [
+    "utility"
+  ],
+  "author": "Littie6amer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Littie6amer/Litties-Boot/issues"
+  },
+  "homepage": "https://github.com/Littie6amer/Litties-Boot#readme"
+}
