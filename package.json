@@ -8,7 +8,7 @@
     "canvas": "^2.9.3",
     "color-to-name": "^1.1.0",
     "contrast": "^1.0.1",
-    "discord.js": "^13.6.0",
+    "discord.js": "^13.11.0",
     "dotenv": "^10.0.0",
     "get-contrast-ratio": "^0.2.1",
     "get-image-colors": "^4.0.0",

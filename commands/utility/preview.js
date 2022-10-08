@@ -4,7 +4,7 @@ const Command = utils.Command
 const command = module.exports = new Command()
 
 command
-    .create(["preview", "beta"], "Preview new features!")
+    .create(["preview", "beta", "pre"], "Preview new features!")
     .setExecute(execute)
 
 async function execute(toolbox) {

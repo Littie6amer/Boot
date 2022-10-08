@@ -9,7 +9,7 @@ const contrast = require('contrast')
 
 command.create(["rank", "level", "l"])
     .setExecute(execute)
-    .setPreviewExecute(previewExecute)
+    // .setPreviewExecute(previewExecute)
     .addButton("rank:", execute, false)
 
 module.exports = command
@@ -40,6 +40,12 @@ async function execute(toolbox) {
 
     if (args && args[0]) {
         try { user = await client.users.fetch(args[0], { force: true }) } catch { }
+        if (user && message.guild.members.cache.get(user.id)) member = message.guild.members.cache.get(user.id)
+        //if (user) user = await user.fetch({ force: true })
+    }
+
+    if (values && values[0]) {
+        try { user = await client.users.fetch(values[0], { force: true }) } catch { }
         if (user && message.guild.members.cache.get(user.id)) member = message.guild.members.cache.get(user.id)
         //if (user) user = await user.fetch({ force: true })
     }

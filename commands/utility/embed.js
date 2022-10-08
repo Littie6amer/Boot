@@ -12,11 +12,13 @@ function execute(toolbox) {
 
     if (!args[0].startsWith("!") && !args[0].startsWith("\n!")) return;
     let instructions = args.join(" ").slice(1).split("\n!").map(value => parseValue(value))
+    // console.log(instructions)
     let embed = new MessageEmbed()
     let components = []
+    const fields = { names: [], text: [] }
     instructions.forEach(instruction => {
         let values = instruction
-        console.log(command)
+        // console.log(command)
         if (!values?.length) return
         if (values[0] == "title") {
             embed.setTitle(values.slice(1).join(" "))
@@ -40,10 +42,16 @@ function execute(toolbox) {
             embed.setColor(values.slice(1)[0])
         }
 
-        // if (values[0] == "field") {
-        //     if (!values[1]) return
-        //     embed.addField(command.slice(1).join(" "), value)
-        // }
+        if (values[0] == "field") {
+            if (!values[1]) return
+            if (values[1] == "name") {
+                fields.names.push(values.slice(2).join(" "))
+            }
+            if (values[1] == "value") {
+                fields.text.push(values.slice(2).join(" "))
+            }
+            // embed.addField(command.slice(1).join(" "), value)
+        }
 
         if (values[0] == "footer") {
             if (!values[1]) return
@@ -66,11 +74,14 @@ function execute(toolbox) {
         //     }
         // }
     });
+
+    embed.setFields(fields.names.map(f => ({ name: f, value: fields.text[fields.names.findIndex((n) => n == f)] })).filter(f => f.value))
     message.reply({ embeds: [embed], components })
 }
 
 function parseValue(value) {
     let val = value.split(" ")
     //val[0] = val[0].split(" ").filter(v => v.length)
+    if (val[0].startsWith("!")) val[0] = val[0].slice(1)
     return val
 }

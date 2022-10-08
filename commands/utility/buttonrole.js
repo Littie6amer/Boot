@@ -28,12 +28,13 @@ async function execute(toolbox) {
 
         let emoji;
         if (options[o][1]) emoji = (await utils.getEmojiData(options[o][0], client))?.mention
-        let role = message.guild.roles.cache.get((options[o][1] ? options[o][1] : options[o][0]).replace("<@&", "").replace(">", ""))
+        const roleId = (options[o][1] ? options[o][1] : options[o][0]).replace("<@&", "").replace(">", "")
+        let role = message.guild.roles.cache.get(roleId)
 
-        if (checkRole(role, message, owner, errors).length) errors[role?.id || "null"] = errors[role?.id || "null"] ? [...errors[role?.id || "null"], ...checkRole(role, message, owner, errors)] : [...checkRole(role, message, owner, errors)]
+        if (checkRole(role, message, owner, errors).length) errors[role?.id || roleId] = errors[role?.id || roleId] ? [...errors[role?.id || roleId], ...checkRole(role, message, owner, errors)] : [...checkRole(role, message, owner, errors)]
         if (checkEmoji(emoji).length) errors[role?.id || "null"] = errors[role?.id || "null"] ? [...errors[role?.id || "null"], ...checkEmoji(emoji)] : [...checkEmoji(emoji)]
 
-        if (errors[role?.id || "null"]) options[o] = null
+        if (!role?.id || errors[role?.id]) options[o] = null
         else options[o] = {
             label: role.name,
             roleId: role.id,
@@ -42,8 +43,8 @@ async function execute(toolbox) {
 
     }
 
-    console.log()
-    if (Object.keys(errors).length) return await message.reply({ content: `\`\`\`${Object.keys(errors).map(err => errors[err].map(e => `${err} (@${message.guild.roles.cache.get(err)?.name}): ${e}`).join("\n")).join("\n")}\`\`\``, embeds: [utils.embeds.error(`This request returned some errors`)]})
+    console.log(errors)
+    if (Object.keys(errors).length) return await message.reply({ content: `\`\`\`${Object.keys(errors).map(err => errors[err].map(e => `${err} (@${message.guild.roles.cache.get(err)?.name||"deleted-role"}): ${e}`).join("\n")).join("\n")}\`\`\``, embeds: [utils.embeds.error(`This request returned some errors`)]})
     if (options.length < 1 || options.length > 10) return message.reply({ content: `1-10 Roles are needed` });
     if (options.length > (Array.from(new Set(options.map(op => op.roleId))).length)) return message.reply({ content: `Duplicate roles!` });
 
@@ -79,8 +80,8 @@ function roleExecute(toolbox) {
 function checkRole(role, message, owner, errs) {
     let errors = []
     if (!role) return ["Role does not exist"]
-    if (errs[role.id]) return ["Role provided twice!"]
-    if (owner.id == message.author.id ? false : message.member.roles.highest.position == role.position) errors.push("This role your highest role!")
+    if (errs[role.id]) return ["Role provided more than once!"]
+    if (owner.id == message.author.id ? false : message.member.roles.highest.position == role.position) errors.push("This role is your highest role!")
     if (owner.id == message.author.id ? false : message.member.roles.highest.position < role.position) errors.push("This role is above your highest role!")
     if (message.guild.me.roles.highest.position == role.position) errors.push("This role is my highest role!")
     if (message.guild.me.roles.highest.position < role.position) errors.push("This role is above my highest role!")

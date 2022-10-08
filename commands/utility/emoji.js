@@ -18,7 +18,7 @@ async function execute(toolbox) {
     if (args.length < 2) return message.reply({
         embeds: [
             new MessageEmbed()
-                .setDescription(`\`${prefixes[0]}emoji info :emoji:\`\n\`${prefixes[0]}emoji steal :emoji:\`\n\`${prefixes[0]}emoji create [Emoji Name] (Image Url)\`\n\`${prefixes[0]}emoji delete :emoji:\`\n\`${prefixes[0]}emoji rename :emoji: [Emoji Name]\`\n\`${prefixes[0]}emoji list :emoji: :emoji:\`\n\`${prefixes[0]}emoji list server\``)
+                .setDescription(`\`${prefixes[0]}emoji info [Emoji Name]\`\n\`${prefixes[0]}emoji info :emoji:\`\n\`${prefixes[0]}emoji create :emoji: :emoji: :emoji:\`\n\`${prefixes[0]}emoji create [Emoji Name] (Image Url)\`\n\`${prefixes[0]}emoji delete :emoji:\`\n\`${prefixes[0]}emoji rename :emoji: [Emoji Name]\`\n\`${prefixes[0]}emoji list :emoji: :emoji:\`\n\`${prefixes[0]}emoji list server\``)
                 .setColor('BLURPLE')
         ]
     })
@@ -30,7 +30,8 @@ async function execute(toolbox) {
 
     switch (args[0]) {
         case "info": {
-            const emoji = await utils.getEmojiData(args[1], client)
+            const emoji = args[1].includes("<") ? await utils.getEmojiData(args[1], client) : await utils.getEmojiData("<:"+(message.guild.emojis.cache.find(e => e.name.toLowerCase().startsWith(args[1].toLowerCase())).identifier)+">", client)
+            console.log("<"+(message.guild.emojis.cache.find(e => e.name.toLowerCase().startsWith(args[1].toLowerCase())).identifier)+">")
 
             if (!emoji) return message.reply({ embeds: [utils.embeds.error(`Supply a valid emoji! \`${prefixes[0]}emoji info :emoji:\``)] })
 
@@ -119,7 +120,7 @@ async function execute(toolbox) {
                 ]
             })
 
-            let emoji = await message.guild.emojis.cache.get((await utils.getEmojiData(args[1]))?.id)
+            let emoji = args[1].includes("<") ? await message.guild.emojis.cache.get((await utils.getEmojiData(args[1]))?.id) : message.guild.emojis.cache.find(e => e.name.toLowerCase().startsWith(args[1].toLowerCase()))
             if (!emoji) return message.reply({
                 embeds: [
                     utils.embeds.error("Invalid emoji!")
@@ -129,7 +130,8 @@ async function execute(toolbox) {
             return message.reply({ embeds: [utils.embeds.success(`**Emoji deleted!** (\`:${emoji.name}:\`)`)] })
         }
 
-        case "create": {
+        case "create":
+        case "steal": {
             if (!message.member.permissions.has("MANAGE_EMOJIS_AND_STICKERS")) return message.reply({
                 embeds: [
                     utils.embeds.error("You don't have permission to manage emojis")
@@ -142,20 +144,46 @@ async function execute(toolbox) {
             })
             if (!args[1]) return message.reply({
                 embeds: [
-                    utils.embeds.error("No name provided for the emoji!")
+                    utils.embeds.error("No emoji or name provided!")
                 ]
             })
-            if (!message.attachments.size && !args[2]) return message.reply({
+            if (!message.attachments.size && !args[2] && !args.join(" ").includes("<")) return message.reply({
                 embeds: [
                     utils.embeds.error("No images provided!")
                 ]
             })
 
-            let emoji = await message.guild.emojis.create(message.attachments.size ? message.attachments.first().url : args[2], args[1]).catch(() => {
-                return message.reply({ embeds: [utils.embeds.error(`Unable to create emoji \`:${args[1]}:\``)] })
-            })
+            if (!args.join(" ").includes("<")) {
+                let emoji = await message.guild.emojis.create(message.attachments.size ? message.attachments.first().url : args[2], args[1]).catch(() => {
+                    return message.reply({ embeds: [utils.embeds.error(`Unable to create emoji \`:${args[1]}:\``)] })
+                })
+                return message.reply({ embeds: [utils.embeds.success(`**Emoji created!** (\`:${emoji.name}:\`) <${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>`)] })
+            } else {
+                let emojis = args.slice(1).join(" ").split("><").join("> <").split(" ")
 
-            return message.reply({ embeds: [utils.embeds.success(`**Emoji created!** (\`:${emoji.name}:\`) <${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>`)] })
+                message.reply({ content: `Preparing to add emojis. This may take a while` })
+
+                for (let emoji in emojis) {
+                    e = await utils.getEmojiData(emojis[emoji], client)
+                    if (!e || e.type == "unicode") emojis[emoji] = null
+                    else emojis[emoji] = e
+                }
+
+                emojis = emojis.filter(e => e != null)
+
+                if (!emojis.length) return message.reply({ embeds: [utils.embeds.error(`Supply a valid emoji(s)! \`${prefixes[0]}emoji create :emoji: :emoji:\``)] })
+
+                let successful = []
+                for (let emoji in emojis) {
+                    emoji = emojis[emoji]
+                    if (message.guild.emojis.cache.length != 50) await message.guild.emojis.create(emoji.URLs.common, emoji.name).then(e => successful.push(e)).catch(() => null)
+                }
+                const unsuccessful = emojis.filter(e => !successful.find(emoji => emoji.name == e.name))
+                // return message.reply({ embeds: [utils.embeds.error(`Unable to create emoji \`:${emoji.name}:\``)] })
+                if (!successful.length) return message.reply({ embeds: [utils.embeds.error(`Unable to create emojis, has your server hit the emoji limit?`)] })
+                if (unsuccessful.length) message.reply({ embeds: [utils.embeds.error(`**Unable to create Emoji(s)** ${unsuccessful.map(emoji => `\`:${emoji.name}:\``).join(", ")}`)] })
+                return message.reply({ embeds: [utils.embeds.success(`**Emoji(s) created!**\n${successful.map(emoji => `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}> \`:${emoji.name}:\``).join("\n")}`)] })
+            }
         }; break
 
         case "rename": {
@@ -184,24 +212,6 @@ async function execute(toolbox) {
                 return message.reply({ embeds: [utils.embeds.error(`Unable to rename emoji \`:${emoji.name}:\``)] })
             })
             return message.reply({ embeds: [utils.embeds.success(`**Emoji renamed!** (\`:${emoji.name}:\` -> \`:${args[2]}:\`) <${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>`)] })
-        }; break
-
-        case "steal": {
-            const emoji = await utils.getEmojiData(args[1], client)
-
-            if (!emoji) return message.reply({ embeds: [utils.embeds.error(`Supply a valid emoji! \`${prefixes[0]}emoji steal :emoji:\``)] })
-
-            if (emoji.type == "unicode") return message.reply({ embeds: [utils.embeds.error(`Supply a valid emoji! \`${prefixes[0]}emoji steal :emoji:\``)] })
-
-            if (!message.member.permissions.has("MANAGE_EMOJIS_AND_STICKERS") || !message.guild.me.permissions.has("MANAGE_EMOJIS_AND_STICKERS")) {
-                return message.reply(emoji.URLs.common)
-            } else {
-                let e = await message.guild.emojis.create(emoji.URLs.common, emoji.name).catch(() => {
-                    return message.reply({ embeds: [utils.embeds.error(`Unable to create emoji \`:${emoji.name}:\``)] })
-                })
-
-                return message.reply({ embeds: [utils.embeds.success(`**Emoji created!** (\`:${emoji.name}:\`) <${emoji.animated ? "a" : ""}:${emoji.name}:${e.id}>`)] })
-            }
         }; break
 
         case "rename": {

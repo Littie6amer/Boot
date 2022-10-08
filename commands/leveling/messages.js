@@ -24,7 +24,11 @@ async function execute(toolbox) {
 
     if (args && args[0]) {
         try { user = await client.users.fetch(args[0]) } catch { }
-    }
+    } 
+    
+    if (values && values[0]) {
+        try { user = await client.users.fetch(values[0]) } catch { }
+    } 
 
     if (message && message.mentions.members.first() && !user) {
         user = message.mentions.members.first().user
@@ -57,10 +61,10 @@ async function execute(toolbox) {
         }
     })
 
-    // const components = [new MessageActionRow().addComponents([
-    //     new MessageButton().setCustomId('rank:' + user.id + "/#~~#/" + input.member.id).setEmoji('👤').setLabel('Rank').setStyle('SECONDARY'),
-    //     //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
-    // ])]
+    const components = [new MessageActionRow().addComponents([
+        new MessageButton().setCustomId('rank:' + user.id + "/#~~#/" + input.member.id).setEmoji('👤').setLabel('Rank').setStyle('SECONDARY'),
+        //new MessageButton().setCustomId('rewards:' + user.id).setEmoji('🎁').setLabel('Rewards').setStyle('SECONDARY'),
+    ])]
 
     const embed = new MessageEmbed()
         .setAuthor(user.username+ "\nShowing Top Channels", user.avatarURL())
@@ -75,9 +79,9 @@ async function execute(toolbox) {
     }
     if (interaction?.message) {
         interaction.deferUpdate()
-        interaction.message.edit({ embeds: [embed], attachments: [] })
+        interaction.message.edit({ embeds: [embed], attachments: [], components })
     } else {
-        input.reply({ embeds: [embed] })
+        input.reply({ embeds: [embed], components })
     }
 }
 
