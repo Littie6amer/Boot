@@ -47,7 +47,6 @@ async function execute(toolbox) {
                     .setThumbnail(emoji.URLs.common)
                     .setDescription(`${emoji.id}`)
                     .addField("Emoji Tag", `${emoji.mention.replace(":", "*:*")}`)
-                    .addField("Emoji Colours", `${emoji.colors.map(c => `[\`#${c.hex} - ${c.name}\`](https://coolors.co/${c.hex})`).join("\n")}`)
                     .setColor(emoji.guildId ? "GREEN" : "#2f3136")
 
                 if (emoji.guildId) embed.setFooter({ text: emoji.guildId == message.guild.id ? "From this server" : "Usable by Litties Boot" })
