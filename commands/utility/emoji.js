@@ -31,7 +31,6 @@ async function execute(toolbox) {
     switch (args[0]) {
         case "info": {
             const emoji = args[1].includes("<") ? await utils.getEmojiData(args[1], client) : await utils.getEmojiData("<:"+(message.guild.emojis.cache.find(e => e.name.toLowerCase().startsWith(args[1].toLowerCase())).identifier)+">", client)
-            console.log("<"+(message.guild.emojis.cache.find(e => e.name.toLowerCase().startsWith(args[1].toLowerCase())).identifier)+">")
 
             if (!emoji) return message.reply({ embeds: [utils.embeds.error(`Supply a valid emoji! \`${prefixes[0]}emoji info :emoji:\``)] })
 
