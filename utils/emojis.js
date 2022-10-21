@@ -1,5 +1,5 @@
 const getImageColors = require('get-image-colors');
-const fetch = require('node-fetch');
+const axios = require('axios');
 const Color = require("color-to-name")
 
 async function getEmojiData(emoji, client) {
@@ -24,7 +24,7 @@ async function getEmojiData(emoji, client) {
             mention: emoji
         }
 
-        let responce = await fetch(data.URLs.png)
+        let responce = await axios.get(data.URLs.png)
         if (client && client.emojis.cache.get(data.id)) data.guildId = client.emojis.cache.get(data.id).guild.id
         if (responce.status != 200) return;
 

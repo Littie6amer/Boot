@@ -73,6 +73,7 @@ async function execute(toolbox) {
             }
         }; break
 
+        case "panel":
         case "list": {
             message.reply("This request may take a while.")
             args[1] == "server" ? emojis.push(...(await getEmojis(message.guild.emojis.cache.map(e => e.toString())))) : emojis.push(...(await getEmojis(args.join(" ").replaceAll("><", "> <").split(" ").slice(1))))
@@ -82,7 +83,7 @@ async function execute(toolbox) {
             let count = 0; let stuff = []
             for (let i = 0; emojis.length > i; i++) {
                 let e = emojis[i];
-                let panel = `${e.mention} ${e.mention.replace(":", "*:*")} [Image](${e.URLs.common})\n`;
+                let panel = `${e.mention} <${e.animated?"a":""}*:*[${e.name}](${e.URLs.common}):${e.id}>\n`;
                 if (count + panel.length < 4000) {
                     count += panel.length; stuff.push(panel)
                 } else {
@@ -147,18 +148,18 @@ async function execute(toolbox) {
                     utils.embeds.error("No emoji or name provided!")
                 ]
             })
-            if (!message.attachments.size && !args[2] && !args.join(" ").includes("<")) return message.reply({
-                embeds: [
-                    utils.embeds.error("No images provided!")
-                ]
-            })
+            // if (!message.attachments.size && !args[2] && !args.join(" ").includes("<")) return message.reply({
+            //     embeds: [
+            //         utils.embeds.error("No images provided!")
+            //     ]
+            // })
 
-            if (!args.join(" ").includes("<")) {
+            if (!args.join(" ").includes("<") && args[2]) {
                 let emoji = await message.guild.emojis.create(message.attachments.size ? message.attachments.first().url : args[2], args[1]).catch(() => {
                     return message.reply({ embeds: [utils.embeds.error(`Unable to create emoji \`:${args[1]}:\``)] })
                 })
                 return message.reply({ embeds: [utils.embeds.success(`**Emoji created!** (\`:${emoji.name}:\`) <${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>`)] })
-            } else {
+            } else if(args.join(" ").includes("<")) {
                 let emojis = args.slice(1).join(" ").split("><").join("> <").split(" ")
 
                 message.reply({ content: `Preparing to add emojis. This may take a while` })
@@ -183,6 +184,8 @@ async function execute(toolbox) {
                 if (!successful.length) return message.reply({ embeds: [utils.embeds.error(`Unable to create emojis, has your server hit the emoji limit?`)] })
                 if (unsuccessful.length) message.reply({ embeds: [utils.embeds.error(`**Unable to create Emoji(s)** ${unsuccessful.map(emoji => `\`:${emoji.name}:\``).join(", ")}`)] })
                 return message.reply({ embeds: [utils.embeds.success(`**Emoji(s) created!**\n${successful.map(emoji => `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}> \`:${emoji.name}:\``).join("\n")}`)] })
+            } else {
+                return message.channel.send("L")
             }
         }; break
 
