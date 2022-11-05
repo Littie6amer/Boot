@@ -1,16 +1,9 @@
-import { Client, SlashCommandBase } from "indigo-client";
+import { SlashCommand } from "indigo-client";
+import { createCmd } from "./create";
+import { deleteCmd } from "./delete";
 
-import Create from "./create/index"
-import Delete from "./delete"
-
-export class Command extends SlashCommandBase {
-    constructor (client: Client) {
-        super(client, {
-            name: "channel",
-            description: "Manage channels",
-            subcommands: [
-                new Create(client), new Delete(client)
-            ]
-        })
-    }
-}
+export const Command = {
+    name: "channel",
+    description: "...",
+    subcommands: [createCmd, deleteCmd]
+} as SlashCommand

@@ -1,15 +1,8 @@
-import { Client, SlashCommandBase } from "indigo-client";
+import { SlashCommand } from "indigo-client";
+import { chatCmd } from "./chat";
 
-import CreateChat from "./chat"
-
-export default class SubCommand extends SlashCommandBase {
-    constructor(client: Client) {
-        super(client, {
-            name: "create",
-            description: "Create a channel for chatting",
-            subcommands: [
-                new CreateChat(client)
-            ],
-        })
-    }
-}
+export const createCmd = {
+    name: "create",
+    description: "...",
+    subcommands: [chatCmd]
+} as SlashCommand

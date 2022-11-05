@@ -1,19 +1,13 @@
-import { GuildMember } from "discord.js";
-import { Client, SlashCommandBase } from "indigo-client";
-import { CommandContext } from "indigo-client/build/bases/CommandContext";
+import { SlashCommand } from "indigo-client";
+import { GuildMember } from "discord.js"
 
-export default class SubCommand extends SlashCommandBase {
-    constructor (client: Client) {
-        super(client, {
-            name: "delete",
-            description: "Delete a channel"
-        })
-    }
-
-    execute (ctx: CommandContext) {
+export const deleteCmd = {
+    name: "delete",
+    description: "...",
+    execute(ctx) {
         const { interaction } = ctx
         if (!ctx.checkPermissions("Channel", { member: ctx.me, permissions: ["ManageChannels", "ViewChannel"] })) return;
         if (!ctx.checkPermissions("Channel", { member: interaction.member as GuildMember, permissions: ["ManageChannels"] })) return;
         interaction.channel?.delete()
-    }
-}
+    },
+} as SlashCommand

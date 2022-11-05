@@ -1,22 +1,17 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import { Client, CommandContext, SlashCommandBase } from "indigo-client";
+import { CommandContext, SlashCommand } from "indigo-client";
 
-export class Command extends SlashCommandBase {
-    constructor(client: Client) {
-        super(client, {
-            name: "boot",
-            description: "The help command needs a better description",
-        })
-    }
-
+export const Command = {
+    name: "boot",
+    description: "The boot command needs a better description",
     execute(ctx: CommandContext) {
-        const { interaction } = ctx
+        const { interaction, client } = ctx
         function commandTree(name: string, subcommands: string[]) {
             return subcommands.map(cmd => `\`/${name} ${cmd}\``).join("\n")
         }
         const embed = new EmbedBuilder()
-            .setColor(this.client.embedColor)
-            .setAuthor({ name: (this.client.user?.username||"Boot")+" › Utility", iconURL: this.client.user?.avatarURL() || undefined })
+            .setColor(client.embedColor)
+            .setAuthor({ name: (client.user?.username || "Boot") + " › Utility", iconURL: client.user?.avatarURL() || undefined })
             .setDescription(`Keeping things professional around your server.`)
             .addFields(
                 [
@@ -41,10 +36,10 @@ export class Command extends SlashCommandBase {
                 new ButtonBuilder()
                     .setLabel("Manual")
                     .setStyle(ButtonStyle.Link)
-                    .setURL("https://aria-docs.littie.xyz")
+                    .setURL("https://boot-manual.littie.xyz")
             ])
         ]
         // @ts-ignore
         interaction.reply({ embeds: [embed], components })
     }
-}
+} as SlashCommand
