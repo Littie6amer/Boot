@@ -48,11 +48,14 @@ module.exports = async (client, message) => {
         if (!userGuildProfile.activity.spamTimestamp || Date.now() - userGuildProfile.activity.spamTimestamp >= 10000) {
             userGuildProfile.activity.spamBuildup = 1
             userGuildProfile.activity.spamTimestamp = Date.now()
+        //} else if (userGuildProfile.activity.spamBuildup > 7) {
+            //message.channel.send(message.author.username+", you're taking the piss now")
         } else if (userGuildProfile.activity.spamBuildup > 4) {
             userGuildProfile.activity.overall.spam++
             userGuildProfile.activity.channels.find(c => c.id == message.channel.id).spam++
             message.spam = true
-            //if (message.channel.myPermissions.has('MANAGE_MESSAGES') && message.deletable) message.react("883108256069869628")
+            // if (message.channel.myPermissions.has('MANAGE_MESSAGES') && message.deletable) message.react("987677196078444544")
+            if (message.channel.myPermissions.has('MANAGE_MESSAGES') && message.deletable) message.delete()
             userGuildProfile.activity.spamBuildup++
         } else {
             userGuildProfile.activity.spamBuildup = userGuildProfile.activity.spamBuildup + 1 || 1

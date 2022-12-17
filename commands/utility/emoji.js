@@ -1,6 +1,7 @@
 const { MessageEmbed, MessageActionRow, MessageButton, MessageSelectMenu } = require("discord.js")
 const { Command } = require("../../utils")
 const utils = require("../../utils")
+const axios = require("axios");
 
 const command = module.exports = new Command()
 
@@ -185,7 +186,10 @@ async function execute(toolbox) {
                 if (unsuccessful.length) message.reply({ embeds: [utils.embeds.error(`**Unable to create Emoji(s)** ${unsuccessful.map(emoji => `\`:${emoji.name}:\``).join(", ")}`)] })
                 return message.reply({ embeds: [utils.embeds.success(`**Emoji(s) created!**\n${successful.map(emoji => `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}> \`:${emoji.name}:\``).join("\n")}`)] })
             } else {
-                return message.channel.send("L")
+                // const emoji = await EmojiGG.emojiByName(args[1]).catch(console.log)
+                const emoji = (await axios.get("https://emoji.gg/api")).data.find(e => e.id == args[0])
+                console.log(emoji)
+                return message.channel.send("cheque console")
             }
         }; break
 
