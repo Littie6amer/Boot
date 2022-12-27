@@ -55,7 +55,7 @@ module.exports = async (client, message) => {
             userGuildProfile.activity.channels.find(c => c.id == message.channel.id).spam++
             message.spam = true
             // if (message.channel.myPermissions.has('MANAGE_MESSAGES') && message.deletable) message.react("987677196078444544")
-            if (message.channel.myPermissions.has('MANAGE_MESSAGES') && message.deletable) message.delete()
+            // if (message.channel.myPermissions.has('MANAGE_MESSAGES') && message.deletable) message.delete()
             userGuildProfile.activity.spamBuildup++
         } else {
             userGuildProfile.activity.spamBuildup = userGuildProfile.activity.spamBuildup + 1 || 1
