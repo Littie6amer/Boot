@@ -4,7 +4,7 @@ const { Client } = require('discord.js');
 const process_settings = require("./process-settings")
 const env = require('dotenv')
 env.config()
-const rest = new REST({ version: '9' }).setToken(process.env.token);
+const rest = new REST({ version: '9' }).setToken(process_settings.botToken);
 const fs = require('fs')
 const commands = []
 const commandNames = []
