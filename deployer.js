@@ -30,7 +30,7 @@ client.on("ready", async () => {
   client.destroy()
 })
 
-client.login(process.env.token)
+client.login(process_settings.botToken)
 
 function loadFolder(path) {
   fs.readdirSync(path).forEach(c => {
