@@ -11,6 +11,7 @@ command.create(["rank", "level", "l"])
     .setExecute(execute)
     // .setPreviewExecute(previewExecute)
     .addButton("rank:", execute, false)
+    .makeSlashCommand()
 
 module.exports = command
 

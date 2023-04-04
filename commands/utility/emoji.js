@@ -162,7 +162,7 @@ async function execute(toolbox) {
             //     ]
             // })
 
-            if (!args.join(" ").includes("<") && args[2]) {
+            if (!args.join(" ").includes("<") && message.attachments.size) {
                 let emoji = await message.guild.emojis.create(message.attachments.size ? message.attachments.first().url : args[2], args[1]).catch(() => {
                     return message.reply({ embeds: [utils.embeds.error(`Unable to create emoji \`:${args[1]}:\``)] })
                 })
